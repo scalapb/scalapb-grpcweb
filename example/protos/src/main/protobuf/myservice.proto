@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package scalapb.web;
+
+message Req {
+    string payload = 1;
+    repeated int32 vals = 2;
+}
+
+message Res {
+    int64 payload = 1;
+    repeated int32 vals = 2;
+}
+
+// The greeting service definition.
+service TestService {
+  // Sends a greeting
+  rpc Unary (Req) returns (Res) {}
+
+  rpc ServerStreaming(Req) returns (stream Res) {}
+
+  rpc BidiStreaming(stream Req) returns (stream Res) {}
+
+  rpc ClientStreaming(stream Req) returns (Res) {}
+}
