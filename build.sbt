@@ -20,7 +20,7 @@ lazy val root = project
   )
 
 inThisBuild(List(
-  organization := "com.thesamet",
+  organization := "com.thesamet.scalapb",
   homepage := Some(url("https://github.com/scalapb/scalapb-grpcweb")),
   licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
   developers := List(

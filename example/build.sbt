@@ -6,11 +6,15 @@ scalaVersion := "2.12.6"
 
 val grpcJavaVersion = "1.15.0"
 
+val grpcWebVersion = "0.1.0"
+
 lazy val protos = 
     crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("protos"))
     .settings(
+        resolvers += Resolver.sonatypeRepo("snapshots"),
+
         PB.protoSources in Compile := Seq(
             (baseDirectory in ThisBuild).value / "protos"/ "src" / "main" / "protobuf"),
         PB.targets in Compile := Seq(
@@ -23,7 +27,7 @@ lazy val protos =
         libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
     )
     .jsSettings(
-        libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.1.0-SNAPSHOT",
+        libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % grpcWebVersion
     )
 
 lazy val protosJS = protos.js
