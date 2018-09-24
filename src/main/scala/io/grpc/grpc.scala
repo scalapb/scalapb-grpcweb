@@ -21,7 +21,8 @@ package stub {
     def onCompleted(): Unit
   }
 
-  abstract class AbstractStub[S <: AbstractStub[S]](channel: Channel, options: CallOptions) {
+  abstract class AbstractStub[S <: AbstractStub[S]](channel: Channel,
+                                                    options: CallOptions) {
     def build(channel: Channel, options: CallOptions): S
   }
 
@@ -44,11 +45,14 @@ package stub {
 
     trait UnaryMethod[ReqT, RespT] extends UnaryRequestMethod[ReqT, RespT]
 
-    trait ServerStreamingMethod[ReqT, RespT] extends UnaryRequestMethod[ReqT, RespT]
+    trait ServerStreamingMethod[ReqT, RespT]
+        extends UnaryRequestMethod[ReqT, RespT]
 
-    trait ClientStreamingMethod[ReqT, RespT] extends StreamingRequestMethod[ReqT, RespT]
+    trait ClientStreamingMethod[ReqT, RespT]
+        extends StreamingRequestMethod[ReqT, RespT]
 
-    trait BidiStreamingMethod[ReqT, RespT] extends StreamingRequestMethod[ReqT, RespT]
+    trait BidiStreamingMethod[ReqT, RespT]
+        extends StreamingRequestMethod[ReqT, RespT]
   }
 }
 
@@ -71,15 +75,15 @@ trait Marshaller[T] {
 }
 
 case class MethodDescriptor[Req, Res](
-  methodType: MethodType,
-  fullName: String,
-  requestMarshaller: Marshaller[Req],
-  responseMarshaller: Marshaller[Res]
+    methodType: MethodType,
+    fullName: String,
+    requestMarshaller: Marshaller[Req],
+    responseMarshaller: Marshaller[Res]
 ) {
   val methodInfo: MethodInfo[Req, Res] = new MethodInfo[Req, Res](
     responseType = null,
-    requestSerializer = requestMarshaller.toUint8Array(_:Req),
-    responseDeserializer = responseMarshaller.fromUint8Array(_:Uint8Array)
+    requestSerializer = requestMarshaller.toUint8Array(_: Req),
+    responseDeserializer = responseMarshaller.fromUint8Array(_: Uint8Array)
   )
 }
 
@@ -95,7 +99,8 @@ object MethodDescriptor {
 
   def newBuilder[Req, Res](): Builder[Req, Res] = new Builder[Req, Res]
 
-  def generateFullMethodName(serviceName: String, methodName: String) = s"${serviceName}/${methodName}"
+  def generateFullMethodName(serviceName: String, methodName: String) =
+    s"${serviceName}/${methodName}"
 
   final class Builder[Req, Res] {
     var methodType: MethodType = null
@@ -131,7 +136,10 @@ object MethodDescriptor {
       require(methodType != null)
       require(requestMarshaller != null)
       require(responseMarshaller != null)
-      MethodDescriptor[Req, Res](methodType, fullName, requestMarshaller, responseMarshaller)
+      MethodDescriptor[Req, Res](methodType,
+                                 fullName,
+                                 requestMarshaller,
+                                 responseMarshaller)
     }
   }
 }
@@ -164,17 +172,19 @@ final case class Status(code: Int, description: String, cause: Throwable)
 
 object Status {
   def fromErrorInfo(ei: ErrorInfo): Status = {
-    val code = 
-      if (scalajs.js.typeOf(ei.code) == "string") 
+    val code =
+      if (scalajs.js.typeOf(ei.code) == "string")
         ei.code.asInstanceOf[String].toInt
       else ei.code.asInstanceOf[Int]
-      
+
     Status(code, ei.message, null)
   }
 
   def fromStatusInfo(si: StatusInfo): Status = Status(si.code, si.details, null)
 
-  def formatThrowableMessage(status: Status): String = s"${status.code}: ${status.description}"
+  def formatThrowableMessage(status: Status): String =
+    s"${status.code}: ${status.description}"
 }
 
-final class StatusRuntimeException(status: Status) extends RuntimeException(Status.formatThrowableMessage(status))
+final class StatusRuntimeException(status: Status)
+    extends RuntimeException(Status.formatThrowableMessage(status))

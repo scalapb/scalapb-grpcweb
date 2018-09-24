@@ -1,7 +1,13 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors.FileDescriptor
-import io.grpc.{CallOptions, Channel, MethodDescriptor, StatusRuntimeException, Status}
+import io.grpc.{
+  CallOptions,
+  Channel,
+  MethodDescriptor,
+  StatusRuntimeException,
+  Status
+}
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
 import io.grpc.stub.StreamObserver
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion, Message}
@@ -11,28 +17,30 @@ import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
 object Marshaller {
-  def forMessage[T <: GeneratedMessage with Message[T]](implicit cmp: GeneratedMessageCompanion[T]): io.grpc.Marshaller[T] = new io.grpc.Marshaller[T] {
-    override def toUint8Array(value: T): Uint8Array = {
-      val ba = value.toByteArray
-      val result = new Uint8Array(ba.length)
-      var i = 0
-      while (i < ba.length) {
-        result(i) = ba(i)
-        i += 1
+  def forMessage[T <: GeneratedMessage with Message[T]](
+      implicit cmp: GeneratedMessageCompanion[T]): io.grpc.Marshaller[T] =
+    new io.grpc.Marshaller[T] {
+      override def toUint8Array(value: T): Uint8Array = {
+        val ba = value.toByteArray
+        val result = new Uint8Array(ba.length)
+        var i = 0
+        while (i < ba.length) {
+          result(i) = ba(i)
+          i += 1
+        }
+        result
       }
-      result
-    }
 
-    override def fromUint8Array(value: Uint8Array): T = {
-      val ba = new Array[Byte](value.length)
-      var i = 0
-      while (i < ba.length) {
-        ba(i) = value(i).toByte
-        i += 1
+      override def fromUint8Array(value: Uint8Array): T = {
+        val ba = new Array[Byte](value.length)
+        var i = 0
+        while (i < ba.length) {
+          ba(i) = value(i).toByte
+          i += 1
+        }
+        cmp.parseFrom(ba)
       }
-      cmp.parseFrom(ba)
     }
-  }
 }
 
 object Channels {
@@ -51,10 +59,10 @@ trait AbstractService {
   def serviceCompanion: ServiceCompanion[_]
 }
 
-abstract class ServiceCompanion[T <: AbstractService] {
-}
+abstract class ServiceCompanion[T <: AbstractService] {}
 
-class ConcreteProtoFileDescriptorSupplier(f: => FileDescriptor) extends ProtoFileDescriptorSupplier
+class ConcreteProtoFileDescriptorSupplier(f: => FileDescriptor)
+    extends ProtoFileDescriptorSupplier
 
 object ClientCalls {
   def asyncUnaryCall[ReqT, RespT](
@@ -73,43 +81,50 @@ object ClientCalls {
           p.success(res)
     }
     channel.client.rpcCall[ReqT, RespT](
-        channel.baseUrl + "/" + method.fullName, request, metadata, method.methodInfo, handler
+      channel.baseUrl + "/" + method.fullName,
+      request,
+      metadata,
+      method.methodInfo,
+      handler
     )
     p.future
   }
 
   def asyncServerStreamingCall[ReqT, RespT](
-    channel: Channel,
-    method: MethodDescriptor[ReqT, RespT],
-    options: CallOptions,
-    request: ReqT,
-    responseObserver: StreamObserver[RespT]
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT,
+      responseObserver: StreamObserver[RespT]
   ): Unit = {
     val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
-    channel.client.rpcCall(channel.baseUrl + "/" + method.fullName, request, metadata, method.methodInfo)
-      .on("data", {
-        res: RespT =>
-          responseObserver.onNext(res)
+    channel.client
+      .rpcCall(channel.baseUrl + "/" + method.fullName,
+               request,
+               metadata,
+               method.methodInfo)
+      .on("data", { res: RespT =>
+        responseObserver.onNext(res)
       })
-      .on("status", {
-        statusInfo: grpcweb.StatusInfo =>
+      .on(
+        "status", { statusInfo: grpcweb.StatusInfo =>
           if (statusInfo.code != 0) {
-            responseObserver.onError(new StatusRuntimeException(Status.fromStatusInfo(statusInfo)))
+            responseObserver.onError(
+              new StatusRuntimeException(Status.fromStatusInfo(statusInfo)))
           } else {
             // Once https://github.com/grpc/grpc-web/issues/289 is fixed.
             responseObserver.onCompleted()
           }
+        }
+      )
+      .on("error", { errorInfo: grpcweb.ErrorInfo =>
+        responseObserver.onError(
+          new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
       })
-      .on("error", {
-        errorInfo: grpcweb.ErrorInfo =>
-          responseObserver.onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
-      })
-      .on("end", {
-        _: Any => 
-          responseObserver.onCompleted()
+      .on("end", { _: Any =>
+        responseObserver.onCompleted()
       })
   }
-
 
   def blockingServerStreamingCall[ReqT, RespT](
       channel: Channel,
@@ -119,10 +134,10 @@ object ClientCalls {
   ): Iterator[RespT] = ???
 
   def blockingUnaryCall[ReqT, RespT](
-    channel: Channel,
-    method: MethodDescriptor[ReqT, RespT],
-    options: CallOptions,
-    request: ReqT
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT
   ): RespT = ???
 
   def asyncClientStreamingCall[ReqT, RespT](
