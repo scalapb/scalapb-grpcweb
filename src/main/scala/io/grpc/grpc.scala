@@ -74,12 +74,12 @@ case class MethodDescriptor[Req, Res](
   methodType: MethodType,
   fullName: String,
   requestMarshaller: Marshaller[Req],
-  responseMarshaller: Marshaller[Res],
+  responseMarshaller: Marshaller[Res]
 ) {
   val methodInfo: MethodInfo[Req, Res] = new MethodInfo[Req, Res](
     responseType = null,
-    requestSerializer = requestMarshaller.toUint8Array,
-    responseDeserializer = responseMarshaller.fromUint8Array
+    requestSerializer = requestMarshaller.toUint8Array(_:Req),
+    responseDeserializer = responseMarshaller.fromUint8Array(_:Uint8Array)
   )
 }
 

@@ -27,7 +27,7 @@ object grpcweb extends js.Object {
     class MethodInfo[Req, Res](
         responseType: js.Any, 
         requestSerializer: js.Function1[Req, Uint8Array],
-        responseDeserializer: js.Function1[Uint8Array, Res],
+        responseDeserializer: js.Function1[Uint8Array, Res]
     ) extends js.Any
   }
 

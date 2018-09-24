@@ -64,13 +64,17 @@ object ClientCalls {
       request: ReqT
   ): Future[RespT] = {
     val p = Promise[RespT]
-    channel.client.rpcCall(channel.baseUrl + "/" + method.fullName, request, new grpcweb.Metadata {}, method.methodInfo, {
+    val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
+    val handler: (grpcweb.ErrorInfo, RespT) => Unit = {
       (errorInfo: grpcweb.ErrorInfo, res: RespT) =>
         if (errorInfo != null)
           p.failure(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
         else
           p.success(res)
-    })
+    }
+    channel.client.rpcCall[ReqT, RespT](
+        channel.baseUrl + "/" + method.fullName, request, metadata, method.methodInfo, handler
+    )
     p.future
   }
 
@@ -81,9 +85,10 @@ object ClientCalls {
     request: ReqT,
     responseObserver: StreamObserver[RespT]
   ): Unit = {
-    channel.client.rpcCall(channel.baseUrl + "/" + method.fullName, request, new grpcweb.Metadata {}, method.methodInfo)
+    val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
+    channel.client.rpcCall(channel.baseUrl + "/" + method.fullName, request, metadata, method.methodInfo)
       .on("data", {
-        res =>
+        res: RespT =>
           responseObserver.onNext(res)
       })
       .on("status", {

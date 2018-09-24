@@ -1,10 +1,14 @@
 organization in ThisBuild := "com.thesamet.scalapb"
 
+scalaVersion := "2.12.6"
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(ScalaJSBundlerPlugin)
   .enablePlugins(ScalaJSPlugin)
   .settings(
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.6"),
+
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
         "com.thesamet.scalapb" %%% "scalapb-runtime" % "0.8.0"
