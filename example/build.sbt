@@ -6,9 +6,12 @@ scalaVersion := "2.12.6"
 
 val grpcJavaVersion = "1.15.0"
 
-val grpcWebVersion = "f013c437-SNAPSHOT"
+val grpcWebVersion = "0.1.0"
 
-resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
+resolvers in ThisBuild ++= Seq(
+    Resolver.sonatypeRepo("snapshots"),
+    Resolver.sonatypeRepo("releases")
+)
 
 lazy val protos = 
     crossProject(JSPlatform, JVMPlatform)
