@@ -6,15 +6,15 @@ scalaVersion := "2.12.6"
 
 val grpcJavaVersion = "1.15.0"
 
-val grpcWebVersion = "0.1.0"
+val grpcWebVersion = "f013c437-SNAPSHOT"
+
+resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
 
 lazy val protos = 
     crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("protos"))
     .settings(
-        resolvers += Resolver.sonatypeRepo("snapshots"),
-
         PB.protoSources in Compile := Seq(
             (baseDirectory in ThisBuild).value / "protos"/ "src" / "main" / "protobuf"),
         PB.targets in Compile := Seq(

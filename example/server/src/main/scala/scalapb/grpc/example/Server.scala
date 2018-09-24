@@ -33,7 +33,7 @@ class MyServiceImpl extends TestService {
     responseObserver.onNext(Res(payload = request.payload.length + 1))
     responseObserver.onNext(Res(payload = request.payload.length + 2))
     if (request.payload == "error") {
-      responseObserver.onError(new StatusRuntimeException("Problem Problem"))
+      responseObserver.onError(new RuntimeException("Problem Problem"))
     } else {
       responseObserver.onNext(Res(payload = request.payload.length + 10))
       responseObserver.onCompleted()
