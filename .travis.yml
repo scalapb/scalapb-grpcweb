@@ -1,0 +1,20 @@
+before_install:
+- git fetch --tags
+
+language: scala
+scala:
+- 2.10.7
+- 2.11.2
+- 2.12.6
+
+stages:
+- name: test
+- name: release
+  if: (branch = master AND type = push) OR (tag IS present)
+
+jobs: 
+  include:
+  - stage: test
+    script: sbt ++$TRAVIS_SCALA_VERSION compile
+  - stage: release   
+    script: sbt ci-release
