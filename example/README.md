@@ -2,15 +2,21 @@
 
 1. Run the server
 
-       sbt server/run
+   ```
+   sbt server/run
+   ```
 
 2. Build the client js:
 
-       sbt client/fastOpsJS::webpack
+   ```
+   sbt client/fastOpsJS::webpack
+   ```
 
 3. Start the envoy proxy server
 
-       docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy
+   ```
+   docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy
+   ```
 
 4. Open the `index.html` file from this directory in your browser.
 
