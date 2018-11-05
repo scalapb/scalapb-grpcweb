@@ -2,7 +2,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 name := "scalapb-grpcweb-example"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 
 val grpcJavaVersion = "1.15.0"
 
