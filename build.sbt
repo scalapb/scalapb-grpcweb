@@ -1,18 +1,18 @@
-scalaVersion := "2.12.7"
+scalaVersion := "2.12.10"
 
 lazy val root = project
   .in(file("."))
   .enablePlugins(ScalaJSBundlerPlugin)
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.7"),
+    crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.1"),
     sonatypeProfileName := "com.thesamet",
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
-      "com.thesamet.scalapb" %%% "scalapb-runtime" % "0.8.2"
+      "com.thesamet.scalapb" %%% "scalapb-runtime" % "0.9.6"
     ),
     scalacOptions += "-P:scalajs:sjsDefinedByDefault",
-    npmDependencies in Compile += "grpc-web" -> "0.4.0"
+    npmDependencies in Compile += "grpc-web" -> "1.0.5"
   )
 
 inThisBuild(
