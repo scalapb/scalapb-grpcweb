@@ -2,7 +2,7 @@
 
 **Experimental grpc-web support for ScalaPB**
 
-ScalaPB can generate gRPC clients and services from a protocl buffer
+ScalaPB can generate gRPC clients and services from a protocol buffer
 definition. 
 
 This library provides a Scala.js runtime that makes the gRPC client generated
