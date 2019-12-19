@@ -2,9 +2,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 name := "scalapb-grpcweb-example"
 
-scalaVersion := "2.12.7"
-
-val grpcJavaVersion = "1.15.0"
+scalaVersion in ThisBuild := "2.12.10"
 
 val grpcWebVersion = "0.1.0"
 
@@ -46,7 +44,7 @@ lazy val client =
 
         scalacOptions += "-P:scalajs:sjsDefinedByDefault",
 
-        libraryDependencies += "co.fs2" %%% "fs2-core" % "0.10.4"
+        libraryDependencies += "co.fs2" %%% "fs2-core" % "0.10.7"
     ).dependsOn(protosJS)
 
 lazy val server = 
