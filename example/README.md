@@ -9,7 +9,7 @@
 2. Build the client js:
 
    ```
-   sbt client/fastOpsJS::webpack
+   sbt client/fastOptJS::webpack
    ```
 
 3. Start the envoy proxy server
