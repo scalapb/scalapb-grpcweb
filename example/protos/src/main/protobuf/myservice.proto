@@ -17,9 +17,9 @@ service TestService {
   // Sends a greeting
   rpc Unary (Req) returns (Res) {}
 
-  rpc ServerStreaming(Req) returns (stream Res) {}
-
-  rpc BidiStreaming(stream Req) returns (stream Res) {}
-
-  rpc ClientStreaming(stream Req) returns (Res) {}
+//  rpc ServerStreaming(Req) returns (stream Res) {}
+//
+//  rpc BidiStreaming(stream Req) returns (stream Res) {}
+//
+//  rpc ClientStreaming(stream Req) returns (Res) {}
 }

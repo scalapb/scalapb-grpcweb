@@ -4,7 +4,7 @@ name := "scalapb-grpcweb-example"
 
 scalaVersion in ThisBuild := "2.12.10"
 
-val grpcWebVersion = "0.1.0"
+val grpcWebVersion = "0.1.0+17-e71f75c7+20200327-1130-SNAPSHOT"
 
 resolvers in ThisBuild ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
@@ -42,9 +42,9 @@ lazy val client =
         // This is an application with a main method
         scalaJSUseMainModuleInitializer := true,
 
-        scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+      //  scalacOptions += "-P:scalajs:sjsDefinedByDefault",
 
-        libraryDependencies += "co.fs2" %%% "fs2-core" % "0.10.7"
+       // libraryDependencies += "co.fs2" %%% "fs2-core" % "0.10.7"
     ).dependsOn(protosJS)
 
 lazy val server = 
