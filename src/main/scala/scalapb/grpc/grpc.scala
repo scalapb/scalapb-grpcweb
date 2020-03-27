@@ -1,6 +1,6 @@
 package scalapb.grpc
 
-import com.google.protobuf.Descriptors.FileDescriptor
+import com.google.protobuf.Descriptors
 import io.grpc.{
   CallOptions,
   Channel,
@@ -61,7 +61,7 @@ trait AbstractService {
 
 abstract class ServiceCompanion[T <: AbstractService] {}
 
-class ConcreteProtoFileDescriptorSupplier(f: => FileDescriptor)
+class ConcreteProtoFileDescriptorSupplier(f: => Descriptors.FileDescriptor)
     extends ProtoFileDescriptorSupplier
 
 object ClientCalls {
@@ -153,4 +153,16 @@ object ClientCalls {
       options: CallOptions,
       responseObserver: StreamObserver[RespT]
   ): StreamObserver[ReqT] = ???
+}
+
+class ConcreteProtoMethodDescriptorSupplier(
+  methodDescriptor: Descriptors.MethodDescriptor
+) {}
+
+object ConcreteProtoMethodDescriptorSupplier {
+  def fromMethodDescriptor(
+    methodDescriptor: Descriptors.MethodDescriptor
+  ): ConcreteProtoMethodDescriptorSupplier = {
+    new ConcreteProtoMethodDescriptorSupplier(methodDescriptor)
+  }
 }

@@ -132,6 +132,11 @@ object MethodDescriptor {
       this
     }
 
+    // Dummy method to allow scalapb-grpcweb generated code compiling
+    def setSchemaDescriptor(md: AnyRef): Builder[Req, Res] = {
+      this
+    }
+
     def build(): MethodDescriptor[Req, Res] = {
       require(methodType != null)
       require(requestMarshaller != null)
