@@ -2,7 +2,7 @@ package scalapb.grpc.example
 
 import io.grpc.stub.StreamObserver
 import scalapb.grpc.Channels
-import scalapb.web.myservice.TestServiceGrpc.TestServiceStub
+import scalapb.web.myservice.TestServiceGrpc
 import scalapb.web.myservice.{Req, Res}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +13,7 @@ object Client {
   def main(args: Array[String]): Unit = {
     println("Hello world!")
 
-    val stub = new TestServiceStub(Channels.grpcwebChannel("http://localhost:8081"))
+    val stub = TestServiceGrpc.stub(Channels.grpcwebChannel("http://localhost:8080"))
     val req = Req(payload="Hello!", vals=Seq(-4000, -1, 17, 39, 4175))
     // val req = Req(payload="error", vals=Seq(-4000, -1, 17, 39, 4175))
 

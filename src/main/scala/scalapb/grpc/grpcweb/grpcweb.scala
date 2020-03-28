@@ -2,9 +2,10 @@ package scalapb.grpc.grpcweb
 
 import scala.annotation.meta.field
 import scala.scalajs.js
+import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.annotation.JSImport.Namespace
-import scala.scalajs.js.annotation.{JSExport, JSImport, ScalaJSDefined}
 import scala.scalajs.js.typedarray.Uint8Array
+
 @JSImport("grpc-web", Namespace)
 @js.native
 object grpcweb extends js.Object {

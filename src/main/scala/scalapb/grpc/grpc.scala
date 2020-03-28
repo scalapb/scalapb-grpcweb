@@ -1,6 +1,6 @@
 package scalapb.grpc
 
-import com.google.protobuf.Descriptors.FileDescriptor
+import com.google.protobuf.Descriptors
 import io.grpc.{
   CallOptions,
   Channel,
@@ -9,6 +9,7 @@ import io.grpc.{
   Status
 }
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
+import io.grpc.protobuf.ProtoMethodDescriptorSupplier
 import io.grpc.stub.StreamObserver
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion, Message}
 
@@ -17,7 +18,7 @@ import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
 object Marshaller {
-  def forMessage[T <: GeneratedMessage with Message[T]](
+  def forMessage[T <: GeneratedMessage](
       implicit cmp: GeneratedMessageCompanion[T]
   ): io.grpc.Marshaller[T] =
     new io.grpc.Marshaller[T] {
@@ -46,7 +47,7 @@ object Marshaller {
 
 object Channels {
   def grpcwebChannel(url: String): Channel = new Channel {
-    override val client = new grpcweb.grpcweb.GrpcWebClientBase()
+    override val client = new grpcweb.grpcweb.GrpcWebClientBase(())
 
     val baseUrl = url
   }
@@ -62,8 +63,18 @@ trait AbstractService {
 
 abstract class ServiceCompanion[T <: AbstractService] {}
 
-class ConcreteProtoFileDescriptorSupplier(f: => FileDescriptor)
-    extends ProtoFileDescriptorSupplier
+class ConcreteProtoFileDescriptorSupplier(f: => Descriptors.FileDescriptor)
+    extends ProtoFileDescriptorSupplier {}
+
+class ConcreteProtoMethodDescriptorSupplier()
+    extends ProtoMethodDescriptorSupplier {}
+
+object ConcreteProtoMethodDescriptorSupplier {
+  def fromMethodDescriptor(
+      methodDescriptor: Descriptors.MethodDescriptor
+  ): ConcreteProtoMethodDescriptorSupplier =
+    new ConcreteProtoMethodDescriptorSupplier()
+}
 
 object ClientCalls {
   def asyncUnaryCall[ReqT, RespT](

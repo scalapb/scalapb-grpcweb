@@ -9,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object Server {
   def main(args: Array[String]): Unit = {
-    val server = ServerBuilder.forPort(50051)
+    val server = ServerBuilder.forPort(9090)
       .addService(
         TestServiceGrpc.bindService(new MyServiceImpl, ExecutionContext.global
       )).build().start()

@@ -10,6 +10,8 @@ import scala.scalajs.js.typedarray.Uint8Array
 
 package protobuf {
   trait ProtoFileDescriptorSupplier
+
+  trait ProtoMethodDescriptorSupplier
 }
 
 package stub {
@@ -133,6 +135,10 @@ object MethodDescriptor {
     def setSampledToLocalTracing(b: Boolean) = {
       this
     }
+
+    def setSchemaDescriptor(
+        p: io.grpc.protobuf.ProtoMethodDescriptorSupplier
+    ): Builder[Req, Res] = this
 
     def build(): MethodDescriptor[Req, Res] = {
       require(methodType != null)

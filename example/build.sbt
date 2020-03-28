@@ -4,7 +4,7 @@ name := "scalapb-grpcweb-example"
 
 scalaVersion in ThisBuild := "2.12.10"
 
-val grpcWebVersion = "0.1.0"
+val grpcWebVersion = "0.2.0"
 
 resolvers in ThisBuild ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
@@ -40,7 +40,7 @@ lazy val client =
     .enablePlugins(ScalaJSBundlerPlugin)
     .settings(
         // This is an application with a main method
-        scalaJSUseMainModuleInitializer := true,
+        scalaJSUseMainModuleInitializer := true
     ).dependsOn(protosJS)
 
 lazy val server = 
