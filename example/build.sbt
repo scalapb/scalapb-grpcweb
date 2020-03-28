@@ -41,10 +41,6 @@ lazy val client =
     .settings(
         // This is an application with a main method
         scalaJSUseMainModuleInitializer := true,
-
-        scalacOptions += "-P:scalajs:sjsDefinedByDefault",
-
-        libraryDependencies += "co.fs2" %%% "fs2-core" % "0.10.7"
     ).dependsOn(protosJS)
 
 lazy val server = 

@@ -18,7 +18,8 @@ import scala.util.Try
 
 object Marshaller {
   def forMessage[T <: GeneratedMessage with Message[T]](
-      implicit cmp: GeneratedMessageCompanion[T]): io.grpc.Marshaller[T] =
+      implicit cmp: GeneratedMessageCompanion[T]
+  ): io.grpc.Marshaller[T] =
     new io.grpc.Marshaller[T] {
       override def toUint8Array(value: T): Uint8Array = {
         val ba = value.toByteArray
@@ -99,18 +100,19 @@ object ClientCalls {
   ): Unit = {
     val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
     channel.client
-      .rpcCall(channel.baseUrl + "/" + method.fullName,
-               request,
-               metadata,
-               method.methodInfo)
-      .on("data", { res: RespT =>
-        responseObserver.onNext(res)
-      })
+      .rpcCall(
+        channel.baseUrl + "/" + method.fullName,
+        request,
+        metadata,
+        method.methodInfo
+      )
+      .on("data", { res: RespT => responseObserver.onNext(res) })
       .on(
         "status", { statusInfo: grpcweb.StatusInfo =>
           if (statusInfo.code != 0) {
             responseObserver.onError(
-              new StatusRuntimeException(Status.fromStatusInfo(statusInfo)))
+              new StatusRuntimeException(Status.fromStatusInfo(statusInfo))
+            )
           } else {
             // Once https://github.com/grpc/grpc-web/issues/289 is fixed.
             responseObserver.onCompleted()
@@ -118,12 +120,10 @@ object ClientCalls {
         }
       )
       .on("error", { errorInfo: grpcweb.ErrorInfo =>
-        responseObserver.onError(
-          new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
+        responseObserver
+          .onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
       })
-      .on("end", { _: Any =>
-        responseObserver.onCompleted()
-      })
+      .on("end", { _: Any => responseObserver.onCompleted() })
   }
 
   def blockingServerStreamingCall[ReqT, RespT](

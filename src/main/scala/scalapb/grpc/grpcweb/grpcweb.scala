@@ -38,8 +38,10 @@ object grpcweb extends js.Object {
 
   @js.native
   class ClientReadableStream extends js.Any {
-    def on[T](`type`: String,
-              callback: js.Function1[T, Unit]): ClientReadableStream = js.native
+    def on[T](
+        `type`: String,
+        callback: js.Function1[T, Unit]
+    ): ClientReadableStream = js.native
 
     def on(`type`: String, callback: js.Function0[Unit]): ClientReadableStream =
       js.native

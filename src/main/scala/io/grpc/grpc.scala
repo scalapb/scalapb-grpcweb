@@ -21,8 +21,10 @@ package stub {
     def onCompleted(): Unit
   }
 
-  abstract class AbstractStub[S <: AbstractStub[S]](channel: Channel,
-                                                    options: CallOptions) {
+  abstract class AbstractStub[S <: AbstractStub[S]](
+      channel: Channel,
+      options: CallOptions
+  ) {
     def build(channel: Channel, options: CallOptions): S
   }
 
@@ -136,10 +138,12 @@ object MethodDescriptor {
       require(methodType != null)
       require(requestMarshaller != null)
       require(responseMarshaller != null)
-      MethodDescriptor[Req, Res](methodType,
-                                 fullName,
-                                 requestMarshaller,
-                                 responseMarshaller)
+      MethodDescriptor[Req, Res](
+        methodType,
+        fullName,
+        requestMarshaller,
+        responseMarshaller
+      )
     }
   }
 }
