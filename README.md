@@ -13,7 +13,7 @@ by ScalaPB work with [grpc-web](https://github.com/grpc/grpc-web).
 1. Add `sbt-scalajs-bundler` to your `project/plugins.sbt`:
 
    ```
-   addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.13.1")
+   addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.17.0")
    ```
 
    and enable it in your `build.sbt`:
@@ -25,7 +25,7 @@ by ScalaPB work with [grpc-web](https://github.com/grpc/grpc-web).
 2. Add a dependency on `scalapb-grpcweb` to your Scala.js project:
 
    ```
-   libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.1.0"
+   libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.2.0"
    ```
 
 3. In your client code, instantiate the stub like this:
