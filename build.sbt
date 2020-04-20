@@ -1,5 +1,17 @@
 scalaVersion := "2.12.10"
 
+val scalapbVersion = "0.10.2"
+
+lazy val codeGen = project
+  .in(file("code-gen"))
+  .settings(
+    name := "grpc-web-code-gen-with-metadata",
+    libraryDependencies ++= Seq(
+      "com.thesamet.scalapb" %% "compilerplugin" % scalapbVersion
+    )
+  )
+
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(ScalaJSBundlerPlugin)
@@ -9,11 +21,11 @@ lazy val root = project
     sonatypeProfileName := "com.thesamet",
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
-      "com.thesamet.scalapb" %%% "scalapb-runtime" % "0.10.2",
+      "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
       "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.5"
     ),
     npmDependencies in Compile += "grpc-web" -> "1.0.7"
-  )
+  ).dependsOn(codeGen).aggregate(codeGen)
 
 inThisBuild(
   List(
