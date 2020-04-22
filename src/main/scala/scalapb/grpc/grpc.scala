@@ -1,7 +1,13 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors
-import io.grpc.{CallOptions, Channel, MethodDescriptor, Status, StatusRuntimeException}
+import io.grpc.{
+  CallOptions,
+  Channel,
+  MethodDescriptor,
+  Status,
+  StatusRuntimeException
+}
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
 import io.grpc.protobuf.ProtoMethodDescriptorSupplier
 import io.grpc.stub.StreamObserver
@@ -110,11 +116,11 @@ object ClientCalls {
   }
 
   def asyncUnaryCall[ReqT, RespT](
-                                   channel: Channel,
-                                   method: MethodDescriptor[ReqT, RespT],
-                                   options: CallOptions,
-                                   request: ReqT
-                                 ): Future[RespT] = {
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT
+  ): Future[RespT] = {
     val metadata = Metadata.empty()
     val p = Promise[RespT]
     val handler: (grpcweb.ErrorInfo, RespT) => Unit = {
@@ -135,24 +141,24 @@ object ClientCalls {
   }
 
   /**
-   *
-   * Overloaded method to support with Metadata
-   * @param channel
-   * @param method
-   * @param options
-   * @param metadata
-   * @param request
-   * @param responseObserver
-   * @tparam ReqT
-   * @tparam RespT
-   */
+    *
+    * Overloaded method to support with Metadata
+    * @param channel
+    * @param method
+    * @param options
+    * @param metadata
+    * @param request
+    * @param responseObserver
+    * @tparam ReqT
+    * @tparam RespT
+    */
   def asyncServerStreamingCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
       metadata: Metadata,
       request: ReqT,
-      responseObserver: StreamObserver[RespT],
+      responseObserver: StreamObserver[RespT]
   ): Unit = {
     channel.client
       .rpcCall(
@@ -161,7 +167,9 @@ object ClientCalls {
         metadata,
         method.methodInfo
       )
-      .on("data", { res: RespT => responseObserver.onNext(res) })
+      .on("data", { res: RespT =>
+        responseObserver.onNext(res)
+      })
       .on(
         "status", { statusInfo: grpcweb.StatusInfo =>
           if (statusInfo.code != 0) {
@@ -178,16 +186,18 @@ object ClientCalls {
         responseObserver
           .onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
       })
-      .on("end", { _: Any => responseObserver.onCompleted() })
+      .on("end", { _: Any =>
+        responseObserver.onCompleted()
+      })
   }
 
   def asyncServerStreamingCall[ReqT, RespT](
-                                             channel: Channel,
-                                             method: MethodDescriptor[ReqT, RespT],
-                                             options: CallOptions,
-                                             request: ReqT,
-                                             responseObserver: StreamObserver[RespT],
-                                           ): Unit = {
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT,
+      responseObserver: StreamObserver[RespT]
+  ): Unit = {
     val metadata = Metadata.empty()
     channel.client
       .rpcCall(

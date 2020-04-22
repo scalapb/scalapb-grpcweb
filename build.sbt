@@ -5,7 +5,7 @@ val scalapbVersion = "0.10.2"
 lazy val codeGen = project
   .in(file("code-gen"))
   .settings(
-    name := "grpc-web-code-gen-with-metadata",
+    name := "grpc-web-code-gen",
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %% "compilerplugin" % scalapbVersion
     )
@@ -25,7 +25,7 @@ lazy val root = project
       "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.5"
     ),
     npmDependencies in Compile += "grpc-web" -> "1.0.7"
-  ).dependsOn(codeGen).aggregate(codeGen)
+  ).aggregate(codeGen)
 
 inThisBuild(
   List(

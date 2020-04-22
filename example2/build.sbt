@@ -11,11 +11,10 @@ resolvers in ThisBuild ++= Seq(
     Resolver.sonatypeRepo("snapshots"),
     Resolver.sonatypeRepo("releases")
 )
-// This is a generator for metadata support
-lazy val addSettings : Seq[Setting[_]] = Seq(
+//  js settings with attribute metadata true in GrpcWebCodeGenerator
+lazy val jsSettings : Seq[Setting[_]] = Seq(
     PB.targets in Compile := Seq(
-        scalapb.gen() -> (sourceManaged in Compile).value,
-          scalapb.grpc_web.GrpcWebWithMetadataCodeGenerator -> (sourceManaged in Compile).value))
+        scalapb.grpc_web.GrpcWebCodeGenerator(true) -> (sourceManaged in Compile).value))
 
 lazy val protos = 
     crossProject(JSPlatform, JVMPlatform)
@@ -35,10 +34,10 @@ lazy val protos =
     )
     .jsSettings(
         // publish locally and update the version for test
-        libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.2.0+13-6851bb06+20200422-1144-SNAPSHOT"
+        libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.2.0+15-1ed77e30+20200427-2143-SNAPSHOT"
 )
 
-lazy val protosJS = protos.js.settings(addSettings : _*)
+lazy val protosJS = protos.js.settings(jsSettings : _*)
 lazy val protosJVM = protos.jvm
 
 lazy val client = 
