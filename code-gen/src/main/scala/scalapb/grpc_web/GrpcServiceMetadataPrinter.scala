@@ -13,16 +13,26 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
 
   private[this] def serviceMethodSignature(method: MethodDescriptor, overrideSig: Boolean) = {
     val overrideStr = if (overrideSig) "override " else ""
-    s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + (method.streamType match {
+     method.streamType match {
       case StreamType.Unary =>
-        s"(request: ${method.inputType.scalaType}, metadata: $metadata): scala.concurrent.Future[${method.outputType.scalaType}]"
-      case StreamType.ClientStreaming =>
-        s"(responseObserver: ${observer(method.outputType.scalaType)}): ${observer(method.inputType.scalaType)}"
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata): scala.concurrent.Future[${method.outputType.scalaType}]"
       case StreamType.ServerStreaming =>
-        s"(request: ${method.inputType.scalaType}, metadata: $metadata, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
-      case StreamType.Bidirectional =>
-        s"(responseObserver: ${observer(method.outputType.scalaType)}): ${observer(method.inputType.scalaType)}"
-    })
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
+      case _ =>
+        ""
+    }
+
+//    s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + (method.streamType match {
+//      case StreamType.Unary =>
+//        s"(request: ${method.inputType.scalaType}, metadata: $metadata): scala.concurrent.Future[${method.outputType.scalaType}]"
+//      case StreamType.ClientStreaming =>
+//        s"(responseObserver: ${observer(method.outputType.scalaType)}): ${observer(method.inputType.scalaType)}"
+//      case StreamType.ServerStreaming =>
+//        s"(request: ${method.inputType.scalaType}, metadata: $metadata, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
+//      case StreamType.Bidirectional =>
+//        s"(responseObserver: ${observer(method.outputType.scalaType)}): ${observer(method.inputType.scalaType)}"
+//    })
+
   }
 
   private[this] def blockingMethodSignature(method: MethodDescriptor, overrideSig: Boolean) = {
@@ -38,9 +48,8 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
 
   private[this] def serviceTrait: PrinterEndo = { p =>
     p.call(generateScalaDoc(service))
-      .add(s"trait ${service.name} extends _root_.scalapb.grpc.AbstractService {")
+      .add(s"trait ${service.name} {")
       .indent
-      .add(s"override def serviceCompanion = ${service.name}")
       .print(service.methods) {
         case (p, method) =>
           p.call(generateScalaDoc(method)).add(serviceMethodSignature(method, overrideSig = false))
@@ -49,30 +58,11 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
       .add("}")
   }
 
-  private[this] def serviceTraitCompanion: PrinterEndo = { p =>
-    p.add(
-      s"object ${service.name} extends _root_.scalapb.grpc.ServiceCompanion[${service.name}] {"
-    )
-      .indent
-      .add(
-        s"implicit def serviceCompanion: _root_.scalapb.grpc.ServiceCompanion[${service.name}] = this"
-      )
-      .add(
-        s"def javaDescriptor: _root_.com.google.protobuf.Descriptors.ServiceDescriptor = ${service.javaDescriptorSource}"
-      )
-      .add(
-        s"def scalaDescriptor: _root_.scalapb.descriptors.ServiceDescriptor = ${service.scalaDescriptorSource}"
-      )
-      .call(bindService)
-      .outdent
-      .add("}")
-  }
 
   private[this] def blockingClientTrait: PrinterEndo = { p =>
     p.call(generateScalaDoc(service))
       .add(s"trait ${service.blockingClient} {")
       .indent
-      .add(s"def serviceCompanion = ${service.name}")
       .print(service.methods.filter(_.canBeBlocking)) {
         case (p, method) =>
           p.call(generateScalaDoc(method)).add(blockingMethodSignature(method, overrideSig = false))
@@ -92,10 +82,10 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
 
   private[this] val serverServiceDef = "_root_.io.grpc.ServerServiceDefinition"
   private[this] val executionContext = "executionContext"
-  private[this] val metadata = "_root_.io.grpc.Metadata"
+  private[this] val metadata = "_root_.scalapb.grpc.grpcweb.Metadata.Metadata"
 
-  private[this] def clientMethodImpl(m: MethodDescriptor, blocking: Boolean) =
-    PrinterEndo { p =>
+  private[this] def clientMethodImpl(m: MethodDescriptor, blocking: Boolean) = {
+    def printCall(p: FunctionalPrinter) = {
       val sig =
         if (blocking) blockingMethodSignature(m, overrideSig = true) + " = {"
         else serviceMethodSignature(m, overrideSig = true) + " = {"
@@ -109,7 +99,7 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
         case StreamType.Bidirectional   => "BidiStreamingCall"
       })
 
-      val args = Seq("channel", m.grpcDescriptor.nameSymbol, "options") ++
+      val args = Seq("channel", m.grpcDescriptor.nameSymbol, "options", "metadata") ++
         (if (m.isClientStreaming) Seq() else Seq("request")) ++
         (if ((m.isClientStreaming || m.isServerStreaming) && !blocking) Seq("responseObserver")
         else Seq())
@@ -117,6 +107,16 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
       val body = s"${clientCalls}.${methodName}(${args.mkString(", ")})"
       p.call(generateScalaDoc(m)).add(sig).addIndented(body).add("}").newline
     }
+
+    PrinterEndo { p =>
+      m.streamType match {
+        case StreamType.Unary           => printCall(p)
+        case StreamType.ServerStreaming => printCall(p)
+        case _ => p
+      }
+    }
+
+  }
 
   private def stubImplementation(
                                   className: String,
@@ -135,10 +135,6 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
       .add("}")
   }
 
-  private[this] val blockingStub: PrinterEndo = {
-    val methods = service.methods.filter(_.canBeBlocking).map(clientMethodImpl(_, true))
-    stubImplementation(service.blockingStub, service.blockingClient, methods)
-  }
 
   private[this] val stub: PrinterEndo = {
     val methods = service.getMethods.asScala.map(clientMethodImpl(_, false)).toSeq
@@ -216,7 +212,7 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
               s"$serverCalls.UnaryMethod[${method.inputType.scalaType}, ${method.outputType.scalaType}]"
             p.add(s"""$call(new $serverMethod {
                      |  override def invoke(request: ${method.inputType.scalaType}, observer: $streamObserver[${method.outputType.scalaType}]): Unit =
-                     |    $serviceImpl.${method.name}(request, new _root_.io.grpc.Metadata()).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
+                     |    $serviceImpl.${method.name}(request, _root_.scalapb.grpc.grpcweb.Metadata()).onComplete(scalapb.grpc.Grpc.completeObserver(observer))(
                      |      $executionContext)
                      |}))""".stripMargin)
           case StreamType.ServerStreaming =>
@@ -224,7 +220,7 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
               s"$serverCalls.ServerStreamingMethod[${method.inputType.scalaType}, ${method.outputType.scalaType}]"
             p.add(s"""$call(new $serverMethod {
                      |  override def invoke(request: ${method.inputType.scalaType}, observer: $streamObserver[${method.outputType.scalaType}]): Unit =
-                     |    $serviceImpl.${method.name}(request,new _root_.io.grpc.Metadata(), observer)
+                     |    $serviceImpl.${method.name}(request, _root_.scalapb.grpc.grpcweb.Metadata(), observer)
                      |}))""".stripMargin)
           case _ =>
             val serverMethod = if (method.streamType == StreamType.ClientStreaming) {
@@ -267,21 +263,9 @@ final class GrpcServiceMetadataPrinter(service: ServiceDescriptor, implicits: De
       .call(serviceDescriptor(service))
       .call(serviceTrait)
       .newline
-      .call(serviceTraitCompanion)
-      .newline
-      .call(blockingClientTrait)
-      .newline
-      .call(blockingStub)
       .newline
       .call(stub)
       .newline
-      .add(
-        s"""def bindService(serviceImpl: ${service.name}, $executionContext: scala.concurrent.ExecutionContext): $serverServiceDef = ${service.name}.bindService(serviceImpl, executionContext)"""
-      )
-      .newline
-      .add(
-        s"def blockingStub(channel: $channel): ${service.blockingStub} = new ${service.blockingStub}(channel)"
-      )
       .newline
       .add(s"def stub(channel: $channel): ${service.stub} = new ${service.stub}(channel)")
       .newline

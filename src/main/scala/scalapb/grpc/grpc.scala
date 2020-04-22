@@ -1,16 +1,12 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors
-import io.grpc.{
-  CallOptions,
-  Channel,
-  MethodDescriptor,
-  StatusRuntimeException,
-  Status
-}
+import io.grpc.{CallOptions, Channel, MethodDescriptor, Status, StatusRuntimeException}
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
 import io.grpc.protobuf.ProtoMethodDescriptorSupplier
 import io.grpc.stub.StreamObserver
+import scalapb.grpc.grpcweb.Metadata
+import scalapb.grpc.grpcweb.Metadata._
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion, Message}
 
 import scala.concurrent.{Future, Promise}
@@ -77,14 +73,25 @@ object ConcreteProtoMethodDescriptorSupplier {
 }
 
 object ClientCalls {
+  /**
+   * Overloaded method to support with Metadata
+   * @param channel
+   * @param method
+   * @param options
+   * @param metadata
+   * @param request
+   * @tparam ReqT
+   * @tparam RespT
+   * @return
+   */
   def asyncUnaryCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
+      metadata: Metadata,
       request: ReqT
   ): Future[RespT] = {
     val p = Promise[RespT]
-    val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
     val handler: (grpcweb.ErrorInfo, RespT) => Unit = {
       (errorInfo: grpcweb.ErrorInfo, res: RespT) =>
         if (errorInfo != null)
@@ -102,14 +109,86 @@ object ClientCalls {
     p.future
   }
 
+  def asyncUnaryCall[ReqT, RespT](
+                                   channel: Channel,
+                                   method: MethodDescriptor[ReqT, RespT],
+                                   options: CallOptions,
+                                   request: ReqT
+                                 ): Future[RespT] = {
+    val metadata = Metadata.empty()
+    val p = Promise[RespT]
+    val handler: (grpcweb.ErrorInfo, RespT) => Unit = {
+      (errorInfo: grpcweb.ErrorInfo, res: RespT) =>
+        if (errorInfo != null)
+          p.failure(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
+        else
+          p.success(res)
+    }
+    channel.client.rpcCall[ReqT, RespT](
+      channel.baseUrl + "/" + method.fullName,
+      request,
+      metadata,
+      method.methodInfo,
+      handler
+    )
+    p.future
+  }
+
+  /**
+   *
+   * Overloaded method to support with Metadata
+   * @param channel
+   * @param method
+   * @param options
+   * @param metadata
+   * @param request
+   * @param responseObserver
+   * @tparam ReqT
+   * @tparam RespT
+   */
   def asyncServerStreamingCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
+      metadata: Metadata,
       request: ReqT,
-      responseObserver: StreamObserver[RespT]
+      responseObserver: StreamObserver[RespT],
   ): Unit = {
-    val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
+    channel.client
+      .rpcCall(
+        channel.baseUrl + "/" + method.fullName,
+        request,
+        metadata,
+        method.methodInfo
+      )
+      .on("data", { res: RespT => responseObserver.onNext(res) })
+      .on(
+        "status", { statusInfo: grpcweb.StatusInfo =>
+          if (statusInfo.code != 0) {
+            responseObserver.onError(
+              new StatusRuntimeException(Status.fromStatusInfo(statusInfo))
+            )
+          } else {
+            // Once https://github.com/grpc/grpc-web/issues/289 is fixed.
+            responseObserver.onCompleted()
+          }
+        }
+      )
+      .on("error", { errorInfo: grpcweb.ErrorInfo =>
+        responseObserver
+          .onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
+      })
+      .on("end", { _: Any => responseObserver.onCompleted() })
+  }
+
+  def asyncServerStreamingCall[ReqT, RespT](
+                                             channel: Channel,
+                                             method: MethodDescriptor[ReqT, RespT],
+                                             options: CallOptions,
+                                             request: ReqT,
+                                             responseObserver: StreamObserver[RespT],
+                                           ): Unit = {
+    val metadata = Metadata.empty()
     channel.client
       .rpcCall(
         channel.baseUrl + "/" + method.fullName,

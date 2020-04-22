@@ -1,0 +1,48 @@
+package scalapb.grpc.example
+
+import io.grpc.stub.StreamObserver
+import scalapb.grpc.Channels
+import scalapb.grpc.grpcweb.Metadata
+import scalapb.grpc.grpcweb.Metadata.Metadata
+import scalapb.web.myservice.TestServiceGrpc
+import scalapb.web.myservice.{Req, Res}
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scalapb.web.myservice.TestServiceGrpcWithMetadata
+class GrpcError(code: String, message: String) extends RuntimeException(s"Grpc-web error ${code}: ${message}")
+
+object Client {
+
+  def main(args: Array[String]): Unit = {
+    println("Hello world!")
+
+    val stub = TestServiceGrpcWithMetadata.stub(Channels.grpcwebChannel("http://localhost:8080"))
+
+    val req = Req(payload="Hello!", vals=Seq(-4000, -1, 17, 39, 4175))
+    // val req = Req(payload="error", vals=Seq(-4000, -1, 17, 39, 4175))
+    val header1 = Seq("custom-header-1" -> "unary-value")
+    val header2 = Seq("custom-header-2" -> "server-streaming-value")
+
+    val metadata: Metadata = Metadata(header1)
+    // Make an async unary call
+    stub.unary(req,metadata).onComplete {
+      f => println("Unary", f)
+    }
+    val metadata2: Metadata = Metadata(header2)
+
+    // Make an async server streaming call
+    stub.serverStreaming(req,metadata2, new StreamObserver[Res] {
+      override def onNext(value: Res): Unit = {
+        println("Next: " + value)
+      }
+
+      override def onError(throwable: Throwable): Unit = {
+        println("Error! " + throwable)
+      }
+
+      override def onCompleted(): Unit = {
+        println("Completed!")
+      }
+    })
+  }
+}
