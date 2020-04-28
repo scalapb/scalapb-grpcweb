@@ -25,8 +25,7 @@ final class GrpcServiceMetadataPrinter(
       case StreamType.Unary =>
         s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata): scala.concurrent.Future[${method.outputType.scalaType}]"
       case StreamType.ServerStreaming =>
-        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata, responseObserver: ${observer(
-          method.outputType.scalaType)}): Unit"
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
       case _ =>
         ""
     }

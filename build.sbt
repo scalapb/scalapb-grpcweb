@@ -11,7 +11,6 @@ lazy val codeGen = project
     )
   )
 
-
 lazy val root = project
   .in(file("."))
   .enablePlugins(ScalaJSBundlerPlugin)
@@ -25,7 +24,8 @@ lazy val root = project
       "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.5"
     ),
     npmDependencies in Compile += "grpc-web" -> "1.0.7"
-  ).aggregate(codeGen)
+  )
+  .aggregate(codeGen)
 
 inThisBuild(
   List(

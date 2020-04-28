@@ -1,8 +1,5 @@
 package scalapb.grpc.grpcweb
 
-
-
-
 import scala.annotation.meta.field
 import scala.scalajs.js
 import scala.scalajs.js.Dictionary
@@ -59,11 +56,10 @@ object grpcweb extends js.Object {
 
 object Metadata {
   type Metadata = js.Dictionary[String]
-  def apply(properties: Seq[(String, String)]): Metadata =  Dictionary.apply[String](properties: _*)
+  def apply(properties: Seq[(String, String)]): Metadata =
+    Dictionary.apply[String](properties: _*)
   def empty(): Metadata = Dictionary.empty[String]
 }
-
-
 @js.native
 trait ErrorInfo extends js.Object {
   var code: js.Any // We sometimes get an Int, sometimes a String

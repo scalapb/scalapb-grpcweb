@@ -8,8 +8,6 @@
     Publish should publish the scalapb-grpcweb and scalapb-grpcweb-code-gen repository locally
     update the build.sbt and plugins.sbt in the example2 with the published version.
 
-
-
 1. Run the server
 
    ```

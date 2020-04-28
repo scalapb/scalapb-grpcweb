@@ -47,8 +47,10 @@ case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
 
   }
 
-  private def validate(request: CodeGenRequest, implicits: DescriptorImplicits)
-    : Map[FileDescriptor, Scalapb.ScalaPbOptions] = {
+  private def validate(
+      request: CodeGenRequest,
+      implicits: DescriptorImplicits
+  ): Map[FileDescriptor, Scalapb.ScalaPbOptions] = {
     val validator = new ProtoValidation(implicits)
     validator.validateFiles(request.allProtos)
   }
@@ -56,7 +58,8 @@ case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
   private def generate(
       params: GeneratorParams,
       file: FileDescriptor,
-      implicits: DescriptorImplicits): Seq[CodeGeneratorResponse.File] = {
+      implicits: DescriptorImplicits
+  ): Seq[CodeGeneratorResponse.File] = {
     val generator = new ProtobufGenerator(params.copy(grpc = true), implicits)
     generator.generateMultipleScalaFilesForFileDescriptor(file)
   }
@@ -64,7 +67,8 @@ case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
   private def generateWithMetadata(
       params: GeneratorParams,
       file: FileDescriptor,
-      implicits: DescriptorImplicits): Seq[CodeGeneratorResponse.File] = {
+      implicits: DescriptorImplicits
+  ): Seq[CodeGeneratorResponse.File] = {
     val serviceFiles = generateServiceFiles(file, implicits)
     val generator = new ProtobufGenerator(params, implicits)
     val allOtherTypes =
@@ -74,14 +78,16 @@ case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
 
   private def generateServiceFiles(
       file: FileDescriptor,
-      implicits: DescriptorImplicits): Seq[CodeGeneratorResponse.File] = {
+      implicits: DescriptorImplicits
+  ): Seq[CodeGeneratorResponse.File] = {
     import implicits._
     file.getServices.asScala.map { service =>
       val p = new GrpcServiceMetadataPrinter(service, implicits)
       val code = p.printService(FunctionalPrinter()).result()
       val b = CodeGeneratorResponse.File.newBuilder()
       b.setName(
-        file.scalaDirectory + "/" + service.companionObject.name + ".scala")
+        file.scalaDirectory + "/" + service.companionObject.name + ".scala"
+      )
       b.setContent(code)
       b.build
     }.toSeq

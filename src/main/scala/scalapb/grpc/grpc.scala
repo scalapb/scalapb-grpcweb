@@ -1,19 +1,15 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors
-import io.grpc.{
-  CallOptions,
-  Channel,
-  MethodDescriptor,
-  Status,
-  StatusRuntimeException
+import io.grpc.protobuf.{
+  ProtoFileDescriptorSupplier,
+  ProtoMethodDescriptorSupplier
 }
-import io.grpc.protobuf.ProtoFileDescriptorSupplier
-import io.grpc.protobuf.ProtoMethodDescriptorSupplier
 import io.grpc.stub.StreamObserver
+import io.grpc._
 import scalapb.grpc.grpcweb.Metadata
 import scalapb.grpc.grpcweb.Metadata._
-import scalapb.{GeneratedMessage, GeneratedMessageCompanion, Message}
+import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.typedarray.Uint8Array
@@ -79,17 +75,7 @@ object ConcreteProtoMethodDescriptorSupplier {
 }
 
 object ClientCalls {
-  /**
-   * Overloaded method to support with Metadata
-   * @param channel
-   * @param method
-   * @param options
-   * @param metadata
-   * @param request
-   * @tparam ReqT
-   * @tparam RespT
-   * @return
-   */
+
   def asyncUnaryCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
@@ -140,18 +126,6 @@ object ClientCalls {
     p.future
   }
 
-  /**
-    *
-    * Overloaded method to support with Metadata
-    * @param channel
-    * @param method
-    * @param options
-    * @param metadata
-    * @param request
-    * @param responseObserver
-    * @tparam ReqT
-    * @tparam RespT
-    */
   def asyncServerStreamingCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
@@ -167,9 +141,7 @@ object ClientCalls {
         metadata,
         method.methodInfo
       )
-      .on("data", { res: RespT =>
-        responseObserver.onNext(res)
-      })
+      .on("data", { res: RespT => responseObserver.onNext(res) })
       .on(
         "status", { statusInfo: grpcweb.StatusInfo =>
           if (statusInfo.code != 0) {
@@ -186,9 +158,7 @@ object ClientCalls {
         responseObserver
           .onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
       })
-      .on("end", { _: Any =>
-        responseObserver.onCompleted()
-      })
+      .on("end", { _: Any => responseObserver.onCompleted() })
   }
 
   def asyncServerStreamingCall[ReqT, RespT](
