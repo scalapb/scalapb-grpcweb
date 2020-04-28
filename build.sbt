@@ -5,7 +5,7 @@ val scalapbVersion = "0.10.2"
 lazy val codeGen = project
   .in(file("code-gen"))
   .settings(
-    name := "grpc-web-code-gen",
+    name := "scalapb-grpcweb-code-gen",
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %% "compilerplugin" % scalapbVersion
     )
