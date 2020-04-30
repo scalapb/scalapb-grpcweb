@@ -26,6 +26,11 @@ object Client {
 
     val metadata: Metadata = Metadata(header1)
     // Make an async unary call
+    stub.unary(req).onComplete { f =>
+      println("Unary", f)
+    }
+
+    // Make an async unary call with metadata
     stub.unary(req, metadata).onComplete { f =>
       println("Unary", f)
     }

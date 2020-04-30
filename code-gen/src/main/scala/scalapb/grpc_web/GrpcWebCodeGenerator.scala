@@ -4,19 +4,11 @@ import com.google.protobuf.Descriptors.FileDescriptor
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse
 import protocbridge.codegen.{CodeGenApp, CodeGenRequest, CodeGenResponse}
-import scalapb.compiler.{
-  DescriptorImplicits,
-  FunctionalPrinter,
-  GeneratorException,
-  GeneratorParams,
-  NameUtils,
-  ProtoValidation,
-  ProtobufGenerator
-}
+import scalapb.compiler._
 import scalapb.grpc_web.compat.JavaConverters._
 import scalapb.options.compiler.Scalapb
 
-case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
+object GrpcWebCodeGenerator extends CodeGenApp {
   override def registerExtensions(registry: ExtensionRegistry): Unit =
     Scalapb.registerAllExtensions(registry)
 
@@ -28,11 +20,7 @@ case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
             new DescriptorImplicits(params, request.allProtos)
           validate(request, implicits)
           val generatedFiles = request.filesToGenerate.flatMap { file =>
-            if (metadata) {
-              generateWithMetadata(params, file, implicits)
-            } else {
-              generate(params, file, implicits)
-            }
+            generateWithMetadata(params, file, implicits)
           }
           CodeGenResponse.succeed(
             generatedFiles
@@ -53,15 +41,6 @@ case class GrpcWebCodeGenerator(metadata: Boolean = false) extends CodeGenApp {
   ): Map[FileDescriptor, Scalapb.ScalaPbOptions] = {
     val validator = new ProtoValidation(implicits)
     validator.validateFiles(request.allProtos)
-  }
-
-  private def generate(
-      params: GeneratorParams,
-      file: FileDescriptor,
-      implicits: DescriptorImplicits
-  ): Seq[CodeGeneratorResponse.File] = {
-    val generator = new ProtobufGenerator(params.copy(grpc = true), implicits)
-    generator.generateMultipleScalaFilesForFileDescriptor(file)
   }
 
   private def generateWithMetadata(

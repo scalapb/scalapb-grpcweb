@@ -23,9 +23,24 @@ final class GrpcServiceMetadataPrinter(
     val overrideStr = if (overrideSig) "override " else ""
     method.streamType match {
       case StreamType.Unary =>
-        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata): scala.concurrent.Future[${method.outputType.scalaType}]"
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, context: $context = defaultContext): scala.concurrent.Future[${method.outputType.scalaType}]"
       case StreamType.ServerStreaming =>
-        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, metadata: $metadata, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, context: $context = defaultContext, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
+      case _ =>
+        ""
+    }
+  }
+
+  private[this] def serviceMethodTraitSignature(
+      method: MethodDescriptor,
+      overrideSig: Boolean
+  ) = {
+    val overrideStr = if (overrideSig) "override " else ""
+    method.streamType match {
+      case StreamType.Unary =>
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, context: $context): scala.concurrent.Future[${method.outputType.scalaType}]"
+      case StreamType.ServerStreaming =>
+        s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + s"(request: ${method.inputType.scalaType}, context: $context, responseObserver: ${observer(method.outputType.scalaType)}): Unit"
       case _ =>
         ""
     }
@@ -38,21 +53,21 @@ final class GrpcServiceMetadataPrinter(
     val overrideStr = if (overrideSig) "override " else ""
     s"${method.deprecatedAnnotation}${overrideStr}def ${method.name}" + (method.streamType match {
       case StreamType.Unary =>
-        s"(request: ${method.inputType.scalaType}, metadata: $metadata): ${method.outputType.scalaType}"
+        s"(request: ${method.inputType.scalaType}, context: $context = defaultContext): ${method.outputType.scalaType}"
       case StreamType.ServerStreaming =>
-        s"(request: ${method.inputType.scalaType}, metadata: $metadata): scala.collection.Iterator[${method.outputType.scalaType}]"
+        s"(request: ${method.inputType.scalaType}, context: $context = defaultContext): scala.collection.Iterator[${method.outputType.scalaType}]"
       case _ => throw new IllegalArgumentException("Invalid method type.")
     })
   }
 
   private[this] def serviceTrait: PrinterEndo = { p =>
     p.call(generateScalaDoc(service))
-      .add(s"trait ${service.name} {")
+      .add(s"trait ${service.name}[-Context] {")
       .indent
       .print(service.methods) {
         case (p, method) =>
           p.call(generateScalaDoc(method))
-            .add(serviceMethodSignature(method, overrideSig = false))
+            .add(serviceMethodTraitSignature(method, overrideSig = false))
       }
       .outdent
       .add("}")
@@ -67,6 +82,10 @@ final class GrpcServiceMetadataPrinter(
   private[this] val clientCalls = "_root_.scalapb.grpc.ClientCalls"
 
   private[this] val metadata = "_root_.scalapb.grpc.grpcweb.Metadata.Metadata"
+
+  private[this] val metadataPackage = "_root_.scalapb.grpc.grpcweb.Metadata"
+
+  private[this] val context = "Context"
 
   private[this] def methodDescriptor(method: MethodDescriptor) = PrinterEndo {
     p =>
@@ -118,7 +137,7 @@ final class GrpcServiceMetadataPrinter(
         "channel",
         m.grpcDescriptor.nameSymbol,
         "options",
-        "metadata"
+        "f(context)"
       ) ++
         (if (m.isClientStreaming) Seq() else Seq("request")) ++
         (if ((m.isClientStreaming || m.isServerStreaming) && !blocking)
@@ -144,14 +163,11 @@ final class GrpcServiceMetadataPrinter(
       baseClass: String,
       methods: Seq[PrinterEndo]
   ): PrinterEndo = { p =>
-    val build =
-      s"override def build(channel: $channel, options: $callOptions): ${className} = new $className(channel, options)"
     p.add(
-        s"class $className(channel: $channel, options: $callOptions = $callOptions.DEFAULT) extends $abstractStub[$className](channel, options) with $baseClass {"
+        s"class $className[$context](channel: $channel, f: $context => $metadata, defaultContext: => $context, options: $callOptions = $callOptions.DEFAULT) extends $baseClass[$context] {"
       )
       .indent
       .call(methods: _*)
-      .add(build)
       .outdent
       .add("}")
   }
@@ -161,6 +177,9 @@ final class GrpcServiceMetadataPrinter(
       service.getMethods.asScala.map(clientMethodImpl(_, false)).toSeq
     stubImplementation(service.stub, service.name, methods)
   }
+
+  private[this] val identityMetadata =
+    s"implicit def identity(metadata: $metadata): $metadata => $metadata = metadata => metadata"
 
   def printService(printer: FunctionalPrinter): FunctionalPrinter = {
     printer
@@ -176,9 +195,16 @@ final class GrpcServiceMetadataPrinter(
       .newline
       .call(stub)
       .newline
+      .add(
+        identityMetadata
+      )
       .newline
       .add(
-        s"def stub(channel: $channel): ${service.stub} = new ${service.stub}(channel)"
+        s"def stub(channel: $channel): ${service.stub}[$metadata] = new ${service.stub}[$metadata](channel, $metadataPackage.empty(), $metadataPackage.empty())"
+      )
+      .newline
+      .add(
+        s"def stub(channel: $channel, metadata: $metadata): ${service.stub}[$metadata] = new ${service.stub}[$metadata](channel, metadata, $metadataPackage.empty())"
       )
       .newline
       .add(

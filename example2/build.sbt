@@ -14,8 +14,7 @@ resolvers in ThisBuild ++= Seq(
 //  js settings with attribute metadata true in GrpcWebCodeGenerator
 lazy val jsSettings: Seq[Setting[_]] = Seq(
   PB.targets in Compile := Seq(
-    scalapb.grpc_web
-      .GrpcWebCodeGenerator(true) -> (sourceManaged in Compile).value
+    scalapb.grpc_web.GrpcWebCodeGenerator -> (sourceManaged in Compile).value
   )
 )
 
@@ -37,7 +36,7 @@ lazy val protos =
     )
     .jsSettings(
       // publish locally and update the version for test
-      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.2.0+15-1ed77e30+20200427-2143-SNAPSHOT"
+      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % "0.2.0+18-d8ba44da+20200430-2220-SNAPSHOT"
     )
 
 lazy val protosJS = protos.js.settings(jsSettings: _*)
