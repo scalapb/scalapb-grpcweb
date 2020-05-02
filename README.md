@@ -66,11 +66,7 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
    }
 
    // You can also pass metadata
-   stub.unary(req, Metadata("header1" -> "value1").onComplete {
-     f => println("Unary", f)
-   }
-
-   stub.unary(req, Metadata().onComplete {
+   stub.unary(req, Metadata("header1" -> "value1")).onComplete {
      f => println("Unary", f)
    }
 
