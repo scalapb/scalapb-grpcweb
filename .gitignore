@@ -2,3 +2,6 @@ target/
 project/target/
 *.class
 
+.bloop
+.metals
+metals.sbt

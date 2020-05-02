@@ -1,14 +1,15 @@
-package scalapb.grpc.grpcweb
+package scalapb.grpcweb
 
 import scala.annotation.meta.field
 import scala.scalajs.js
+import scala.scalajs.js.Dictionary
 import scala.scalajs.js.annotation.JSImport
 import scala.scalajs.js.annotation.JSImport.Namespace
 import scala.scalajs.js.typedarray.Uint8Array
 
 @JSImport("grpc-web", Namespace)
 @js.native
-object grpcweb extends js.Object {
+object native extends js.Object {
   @js.native
   class GrpcWebClientBase(opts: js.Any) extends js.Any {
     def rpcCall[Req, Res](
@@ -49,18 +50,16 @@ object grpcweb extends js.Object {
 
     def cancel(): Unit = js.native
   }
-}
 
-trait Metadata extends js.Object {}
+  @js.native
+  trait ErrorInfo extends js.Object {
+    var code: js.Any // We sometimes get an Int, sometimes a String
+    var message: String
+  }
 
-@js.native
-trait ErrorInfo extends js.Object {
-  var code: js.Any // We sometimes get an Int, sometimes a String
-  var message: String
-}
-
-@js.native
-trait StatusInfo extends js.Object {
-  var code: Int
-  var details: String
+  @js.native
+  trait StatusInfo extends js.Object {
+    var code: Int
+    var details: String
+  }
 }

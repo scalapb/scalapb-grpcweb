@@ -1,17 +1,15 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors
-import io.grpc.{
-  CallOptions,
-  Channel,
-  MethodDescriptor,
-  StatusRuntimeException,
-  Status
+import io.grpc.protobuf.{
+  ProtoFileDescriptorSupplier,
+  ProtoMethodDescriptorSupplier
 }
-import io.grpc.protobuf.ProtoFileDescriptorSupplier
-import io.grpc.protobuf.ProtoMethodDescriptorSupplier
 import io.grpc.stub.StreamObserver
-import scalapb.{GeneratedMessage, GeneratedMessageCompanion, Message}
+import io.grpc._
+import scalapb.grpcweb.Metadata
+import scalapb.grpcweb.native.{StatusInfo, ErrorInfo}
+import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.typedarray.Uint8Array
@@ -47,7 +45,7 @@ object Marshaller {
 
 object Channels {
   def grpcwebChannel(url: String): Channel = new Channel {
-    override val client = new grpcweb.grpcweb.GrpcWebClientBase(())
+    override val client = new scalapb.grpcweb.native.GrpcWebClientBase(())
 
     val baseUrl = url
   }
@@ -81,12 +79,12 @@ object ClientCalls {
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
+      metadata: Metadata,
       request: ReqT
   ): Future[RespT] = {
     val p = Promise[RespT]
-    val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
-    val handler: (grpcweb.ErrorInfo, RespT) => Unit = {
-      (errorInfo: grpcweb.ErrorInfo, res: RespT) =>
+    val handler: (ErrorInfo, RespT) => Unit = {
+      (errorInfo: ErrorInfo, res: RespT) =>
         if (errorInfo != null)
           p.failure(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
         else
@@ -106,10 +104,10 @@ object ClientCalls {
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
+      metadata: Metadata,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
   ): Unit = {
-    val metadata: grpcweb.Metadata = new grpcweb.Metadata {}
     channel.client
       .rpcCall(
         channel.baseUrl + "/" + method.fullName,
@@ -119,7 +117,7 @@ object ClientCalls {
       )
       .on("data", { res: RespT => responseObserver.onNext(res) })
       .on(
-        "status", { statusInfo: grpcweb.StatusInfo =>
+        "status", { statusInfo: StatusInfo =>
           if (statusInfo.code != 0) {
             responseObserver.onError(
               new StatusRuntimeException(Status.fromStatusInfo(statusInfo))
@@ -130,38 +128,10 @@ object ClientCalls {
           }
         }
       )
-      .on("error", { errorInfo: grpcweb.ErrorInfo =>
+      .on("error", { errorInfo: ErrorInfo =>
         responseObserver
           .onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
       })
       .on("end", { _: Any => responseObserver.onCompleted() })
   }
-
-  def blockingServerStreamingCall[ReqT, RespT](
-      channel: Channel,
-      method: MethodDescriptor[ReqT, RespT],
-      options: CallOptions,
-      request: ReqT
-  ): Iterator[RespT] = ???
-
-  def blockingUnaryCall[ReqT, RespT](
-      channel: Channel,
-      method: MethodDescriptor[ReqT, RespT],
-      options: CallOptions,
-      request: ReqT
-  ): RespT = ???
-
-  def asyncClientStreamingCall[ReqT, RespT](
-      channel: Channel,
-      method: MethodDescriptor[ReqT, RespT],
-      options: CallOptions,
-      responseObserver: StreamObserver[RespT]
-  ): StreamObserver[ReqT] = ???
-
-  def asyncBidiStreamingCall[ReqT, RespT](
-      channel: Channel,
-      method: MethodDescriptor[ReqT, RespT],
-      options: CallOptions,
-      responseObserver: StreamObserver[RespT]
-  ): StreamObserver[ReqT] = ???
 }

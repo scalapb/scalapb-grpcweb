@@ -11,6 +11,9 @@ stages:
 - name: release
   if: (branch = master AND type = push) OR (tag IS present)
 
+script:
+- sbt ++$TRAVIS_SCALA_VERSION test
+
 jobs: 
   include:
   - stage: test

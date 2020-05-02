@@ -22,3 +22,4 @@
 
    **NOTE**: All the output goes into the Javascript console. It is expected for the
    page to be blank!
+

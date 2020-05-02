@@ -2,9 +2,9 @@ package io.grpc
 
 import io.grpc.MethodDescriptor.MethodType
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
-import scalapb.grpc.grpcweb.grpcweb.AbstractClientBase.MethodInfo
-import scalapb.grpc.grpcweb.grpcweb.GrpcWebClientBase
-import scalapb.grpc.grpcweb.{ErrorInfo, StatusInfo}
+import scalapb.grpcweb.native.AbstractClientBase.MethodInfo
+import scalapb.grpcweb.native.GrpcWebClientBase
+import scalapb.grpcweb.native.{ErrorInfo, StatusInfo}
 
 import scala.scalajs.js.typedarray.Uint8Array
 
