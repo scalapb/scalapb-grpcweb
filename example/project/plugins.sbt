@@ -1,3 +1,5 @@
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.0.1")
@@ -11,4 +13,4 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.4")
 libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.2"
 
 // publish locally and update the version for test
-libraryDependencies += "com.thesamet.scalapb" %% "scalapb-grpcweb-code-gen" % "0.2.1-SNAPSHOT"
+libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % "0.2.0+15-52f7fd47-SNAPSHOT"

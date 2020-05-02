@@ -28,7 +28,7 @@ lazy val protos =
     )
     .jsSettings(
       // publish locally and update the version for test
-      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-grpcweb" % scalapb.grpcweb.BuildInfo.version,
+      libraryDependencies += "com.thesamet.scalapb.grpcweb" %%% "scalapb-grpcweb" % scalapb.grpcweb.BuildInfo.version,
       PB.targets in Compile := Seq(
         scalapb.gen(grpc = false) -> (sourceManaged in Compile).value,
         scalapb.grpcweb.GrpcWebCodeGenerator -> (sourceManaged in Compile).value
