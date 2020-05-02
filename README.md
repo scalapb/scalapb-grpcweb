@@ -8,18 +8,19 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
 ## Usage:
 
 1. Add the following to your `project/plugins.sbt`:
-
+    ```
     val grpcWebVersion = "0.3.0"
-
+    
     resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
-
+    
     addSbtPlugin("com.thesamet" % "sbt-protoc" % "0.99.31")
-
+    
     libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.2"
-
+    
     libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-codegen" % grpcWebVersion
-
-   addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.17.0")
+    
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.17.0")
+    ```
 
 2. Add a cross-project with the protos that will be shared by Scala.js and
    JVM:
@@ -66,6 +67,7 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
    }
 
    // You can also pass metadata
+   // Make sure header1 is accepted on the envoy config, otherwise the request will be rejected
    stub.unary(req, Metadata("header1" -> "value1")).onComplete {
      f => println("Unary", f)
    }
