@@ -1,3 +1,5 @@
+[![Snapshot Artifacts][Badge-SonatypeSnapshots]][Link-SonatypeSnapshots]
+
 # scalapb-grpcweb
 
 **Experimental grpc-web support for ScalaPB**
@@ -89,3 +91,6 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
    ```
 
 Check the [full example](https://github.com/scalapb/scalapb-grpcweb/tree/master/example)
+
+[Link-SonatypeSnapshots]: https://oss.sonatype.org/content/repositories/snapshots/com/thesamet/scalapb/grpcweb/scalapb-grpcweb_sjs1_2.13/ "Sonatype Snapshots"
+[Badge-SonatypeSnapshots]: https://img.shields.io/nexus/s/https/oss.sonatype.org/com.thesamet.scalapb.grpcweb/scalapb-grpcweb_sjs1_2.13.svg "Sonatype Snapshots"
