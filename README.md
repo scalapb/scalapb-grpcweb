@@ -19,7 +19,7 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
     
     libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.2"
     
-    libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-codegen" % grpcWebVersion
+    libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % grpcWebVersion
     
     addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.17.0")
     ```
