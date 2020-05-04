@@ -68,8 +68,8 @@ final class GrpcWebServicePrinter(
 
   private[this] val context = "Context"
 
-  private[this] def methodDescriptor(method: MethodDescriptor) = PrinterEndo {
-    p =>
+  private[this] def methodDescriptor(method: MethodDescriptor) =
+    PrinterEndo { p =>
       def marshaller(t: MethodDescriptorPimp#MethodTypeWrapper) =
         if (t.customScalaType.isDefined)
           s"_root_.scalapb.grpc.Marshaller.forTypeMappedType[${t.baseScalaType}, ${t.scalaType}]"
@@ -97,7 +97,7 @@ final class GrpcWebServicePrinter(
          |    .build()
          |""".stripMargin
       )
-  }
+    }
 
   private[this] def clientMethodImpl(m: MethodDescriptor): PrinterEndo = { p =>
     val (maybeObserver, methodName) = (m.streamType match {

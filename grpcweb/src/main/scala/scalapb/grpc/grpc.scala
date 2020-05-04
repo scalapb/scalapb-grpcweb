@@ -16,8 +16,8 @@ import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
 object Marshaller {
-  def forMessage[T <: GeneratedMessage](
-      implicit cmp: GeneratedMessageCompanion[T]
+  def forMessage[T <: GeneratedMessage](implicit
+      cmp: GeneratedMessageCompanion[T]
   ): io.grpc.Marshaller[T] =
     new io.grpc.Marshaller[T] {
       override def toUint8Array(value: T): Uint8Array = {
@@ -44,11 +44,12 @@ object Marshaller {
 }
 
 object Channels {
-  def grpcwebChannel(url: String): ManagedChannel = new ManagedChannel {
-    override val client = new scalapb.grpcweb.native.GrpcWebClientBase(())
+  def grpcwebChannel(url: String): ManagedChannel =
+    new ManagedChannel {
+      override val client = new scalapb.grpcweb.native.GrpcWebClientBase(())
 
-    val baseUrl = url
-  }
+      val baseUrl = url
+    }
 }
 
 object Grpc {
@@ -117,7 +118,8 @@ object ClientCalls {
       )
       .on("data", { res: RespT => responseObserver.onNext(res) })
       .on(
-        "status", { statusInfo: StatusInfo =>
+        "status",
+        { statusInfo: StatusInfo =>
           if (statusInfo.code != 0) {
             responseObserver.onError(
               new StatusRuntimeException(Status.fromStatusInfo(statusInfo))
@@ -128,10 +130,15 @@ object ClientCalls {
           }
         }
       )
-      .on("error", { errorInfo: ErrorInfo =>
-        responseObserver
-          .onError(new StatusRuntimeException(Status.fromErrorInfo(errorInfo)))
-      })
+      .on(
+        "error",
+        { errorInfo: ErrorInfo =>
+          responseObserver
+            .onError(
+              new StatusRuntimeException(Status.fromErrorInfo(errorInfo))
+            )
+        }
+      )
       .on("end", { _: Any => responseObserver.onCompleted() })
   }
 
