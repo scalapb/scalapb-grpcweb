@@ -66,6 +66,8 @@ trait Channel {
   def baseUrl: String
 }
 
+trait ManagedChannel extends Channel
+
 trait CallOptions
 
 object CallOptions {
@@ -178,7 +180,10 @@ object ServerServiceDefinition {
   }
 }
 
-final case class Status(code: Int, description: String, cause: Throwable)
+final case class Status(code: Int, description: String, cause: Throwable) {
+  def withDescription(description: String) = copy(description = description)
+  def withCause(cause: Throwable) = copy(cause = cause)
+}
 
 object Status {
   def fromErrorInfo(ei: ErrorInfo): Status = {
@@ -194,7 +199,11 @@ object Status {
 
   def formatThrowableMessage(status: Status): String =
     s"${status.code}: ${status.description}"
+
+  val INTERNAL = Status(13, null, null)
 }
 
 final class StatusRuntimeException(status: Status)
     extends RuntimeException(Status.formatThrowableMessage(status))
+
+final class Metadata

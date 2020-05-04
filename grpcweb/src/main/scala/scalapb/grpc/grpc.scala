@@ -44,7 +44,7 @@ object Marshaller {
 }
 
 object Channels {
-  def grpcwebChannel(url: String): Channel = new Channel {
+  def grpcwebChannel(url: String): ManagedChannel = new ManagedChannel {
     override val client = new scalapb.grpcweb.native.GrpcWebClientBase(())
 
     val baseUrl = url
@@ -134,4 +134,47 @@ object ClientCalls {
       })
       .on("end", { _: Any => responseObserver.onCompleted() })
   }
+
+  def asyncUnaryCall[ReqT, RespT](
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT
+  ): Future[RespT] = ???
+
+  def asyncServerStreamingCall[ReqT, RespT](
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT,
+      responseObserver: StreamObserver[RespT]
+  ): Unit = ???
+
+  def asyncClientStreamingCall[ReqT, RespT](
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      responseObserver: StreamObserver[RespT]
+  ): StreamObserver[ReqT] = ???
+
+  def asyncBidiStreamingCall[ReqT, RespT](
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      responseObserver: StreamObserver[RespT]
+  ): StreamObserver[ReqT] = ???
+
+  def blockingServerStreamingCall[ReqT, RespT](
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT
+  ): Iterator[RespT] = ???
+
+  def blockingUnaryCall[ReqT, RespT](
+      channel: Channel,
+      method: MethodDescriptor[ReqT, RespT],
+      options: CallOptions,
+      request: ReqT
+  ): RespT = ???
 }
