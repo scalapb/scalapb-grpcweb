@@ -10,7 +10,7 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.17.0")
 
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.4")
 
-libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.2"
+libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.3"
 
 // publish locally and update the version for test
 libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % "0.2.0+15-52f7fd47-SNAPSHOT"
