@@ -9,7 +9,7 @@ skip in publish := true
 sonatypeProfileName := "com.thesamet"
 
 val Scala212 = "2.12.10"
-val Scala213 = "2.13.1"
+val Scala213 = "2.13.2"
 
 lazy val codeGen = project
   .in(file("code-gen"))
@@ -64,8 +64,8 @@ lazy val protocGenScalaGrpcWeb = project
 
 lazy val grpcweb = project
   .in(file("grpcweb"))
-  .enablePlugins(ScalaJSBundlerPlugin)
   .enablePlugins(ScalaJSPlugin)
+  .enablePlugins(ScalaJSBundlerPlugin)
   .settings(
     crossScalaVersions := Seq(Scala212, Scala213),
     name := "scalapb-grpcweb",
