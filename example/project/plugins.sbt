@@ -13,4 +13,4 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.0")
 libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.3"
 
 // publish locally and update the version for test
-libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % "0.2.0+15-52f7fd47-SNAPSHOT"
+libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % "0.3.0"
