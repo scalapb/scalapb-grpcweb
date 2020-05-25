@@ -11,6 +11,8 @@ sonatypeProfileName := "com.thesamet"
 val Scala212 = "2.12.10"
 val Scala213 = "2.13.2"
 
+scalaVersion in ThisBuild := Scala213
+
 lazy val codeGen = project
   .in(file("code-gen"))
   .enablePlugins(BuildInfoPlugin)

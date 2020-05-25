@@ -205,5 +205,3 @@ object Status {
 
 final class StatusRuntimeException(status: Status)
     extends RuntimeException(Status.formatThrowableMessage(status))
-
-final class Metadata
