@@ -71,7 +71,7 @@ lazy val grpcweb = project
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
-      "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.5"
+      "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.6"
     ),
     npmDependencies in Compile += "grpc-web" -> "1.0.7"
   )
