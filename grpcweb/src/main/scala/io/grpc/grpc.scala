@@ -205,3 +205,11 @@ object Status {
 
 final class StatusRuntimeException(status: Status)
     extends RuntimeException(Status.formatThrowableMessage(status))
+
+trait Attributes
+
+trait ServerCall[Req, Res] {
+  def getAuthority(): String = ???
+  def getMethodDescriptor(): MethodDescriptor[Req, Res] = ???
+  def getAttributes(): Attributes = ???
+}
