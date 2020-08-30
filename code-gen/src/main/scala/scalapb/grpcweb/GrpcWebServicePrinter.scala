@@ -100,12 +100,12 @@ final class GrpcWebServicePrinter(
     }
 
   private[this] def clientMethodImpl(m: MethodDescriptor): PrinterEndo = { p =>
-    val (maybeObserver, methodName) = m.streamType match {
+    val (maybeObserver, methodName) = (m.streamType match {
       case StreamType.Unary => ("", "asyncUnaryCall")
       case StreamType.ServerStreaming =>
         (", responseObserver", "asyncServerStreamingCall")
       case _ => ???
-    }
+    })
 
     val args = Seq(
       "channel",
@@ -113,9 +113,10 @@ final class GrpcWebServicePrinter(
       "options",
       "f(context)"
     ) ++
-      (if (m.isClientStreaming) Seq.empty else Seq("request")) ++
-      (if (m.isClientStreaming || m.isServerStreaming) Seq("responseObserver")
-       else Seq.empty)
+      (if (m.isClientStreaming) Seq() else Seq("request")) ++
+      (if ((m.isClientStreaming || m.isServerStreaming))
+         Seq("responseObserver")
+       else Seq())
 
     val body = s"${clientCalls}.${methodName}(${args.mkString(", ")})"
     p.call(generateScalaDoc(m))
@@ -144,8 +145,8 @@ final class GrpcWebServicePrinter(
   private[this] val stub: PrinterEndo = {
     val methods =
       service.getMethods.asScala
-        .filter(isSupported)
-        .map(clientMethodImpl)
+        .filter(isSupported(_))
+        .map(clientMethodImpl(_))
         .toSeq
     stubImplementation(service.stub, service.name, methods)
   }

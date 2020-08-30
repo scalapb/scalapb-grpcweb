@@ -109,7 +109,7 @@ object ClientCalls {
       metadata: Metadata,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): ClientReadableStream =
+  ): ClientReadableStream = {
     channel.client
       .rpcCall(
         channel.baseUrl + "/" + method.fullName,
@@ -141,14 +141,14 @@ object ClientCalls {
         }
       )
       .on("end", { _: Any => responseObserver.onCompleted() })
+  }
 
   def asyncUnaryCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
       request: ReqT
-  ): Future[RespT] =
-    asyncUnaryCall(channel, method, options, Metadata.empty, request)
+  ): Future[RespT] = ???
 
   def asyncServerStreamingCall[ReqT, RespT](
       channel: Channel,
@@ -156,15 +156,7 @@ object ClientCalls {
       options: CallOptions,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): ClientReadableStream =
-    asyncServerStreamingCall(
-      channel,
-      method,
-      options,
-      Metadata.empty,
-      request,
-      responseObserver
-    )
+  ): ClientReadableStream = ???
 
   def asyncClientStreamingCall[ReqT, RespT](
       channel: Channel,
@@ -192,9 +184,5 @@ object ClientCalls {
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
       request: ReqT
-  ): RespT =
-    Await.result(
-      asyncUnaryCall(channel, method, options, request),
-      Duration.apply(1L, scala.concurrent.duration.MINUTES)
-    )
+  ): RespT = ???
 }
