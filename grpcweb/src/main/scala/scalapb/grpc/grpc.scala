@@ -1,7 +1,10 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors
-import io.grpc.protobuf.{ProtoFileDescriptorSupplier, ProtoMethodDescriptorSupplier}
+import io.grpc.protobuf.{
+  ProtoFileDescriptorSupplier,
+  ProtoMethodDescriptorSupplier
+}
 import io.grpc.stub.StreamObserver
 import io.grpc._
 import scalapb.grpcweb.Metadata
@@ -154,7 +157,14 @@ object ClientCalls {
       request: ReqT,
       responseObserver: StreamObserver[RespT]
   ): ClientReadableStream =
-    asyncServerStreamingCall(channel, method, options, Metadata.empty, request, responseObserver)
+    asyncServerStreamingCall(
+      channel,
+      method,
+      options,
+      Metadata.empty,
+      request,
+      responseObserver
+    )
 
   def asyncClientStreamingCall[ReqT, RespT](
       channel: Channel,

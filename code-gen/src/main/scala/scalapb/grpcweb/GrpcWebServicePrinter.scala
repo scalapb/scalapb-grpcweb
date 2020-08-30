@@ -114,7 +114,8 @@ final class GrpcWebServicePrinter(
       "f(context)"
     ) ++
       (if (m.isClientStreaming) Seq.empty else Seq("request")) ++
-      (if (m.isClientStreaming || m.isServerStreaming) Seq("responseObserver") else Seq.empty)
+      (if (m.isClientStreaming || m.isServerStreaming) Seq("responseObserver")
+       else Seq.empty)
 
     val body = s"${clientCalls}.${methodName}(${args.mkString(", ")})"
     p.call(generateScalaDoc(m))
