@@ -1,17 +1,15 @@
 package scalapb.grpc
 
 import com.google.protobuf.Descriptors
-import io.grpc.protobuf.{
-  ProtoFileDescriptorSupplier,
-  ProtoMethodDescriptorSupplier
-}
+import io.grpc.protobuf.{ProtoFileDescriptorSupplier, ProtoMethodDescriptorSupplier}
 import io.grpc.stub.StreamObserver
 import io.grpc._
 import scalapb.grpcweb.Metadata
-import scalapb.grpcweb.native.{StatusInfo, ErrorInfo}
+import scalapb.grpcweb.native.{ClientReadableStream, ErrorInfo, StatusInfo}
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future, Promise}
 import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
@@ -108,7 +106,7 @@ object ClientCalls {
       metadata: Metadata,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): Unit = {
+  ): ClientReadableStream =
     channel.client
       .rpcCall(
         channel.baseUrl + "/" + method.fullName,
@@ -140,14 +138,14 @@ object ClientCalls {
         }
       )
       .on("end", { _: Any => responseObserver.onCompleted() })
-  }
 
   def asyncUnaryCall[ReqT, RespT](
       channel: Channel,
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
       request: ReqT
-  ): Future[RespT] = ???
+  ): Future[RespT] =
+    asyncUnaryCall(channel, method, options, Metadata.empty, request)
 
   def asyncServerStreamingCall[ReqT, RespT](
       channel: Channel,
@@ -155,7 +153,8 @@ object ClientCalls {
       options: CallOptions,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): Unit = ???
+  ): ClientReadableStream =
+    asyncServerStreamingCall(channel, method, options, Metadata.empty, request, responseObserver)
 
   def asyncClientStreamingCall[ReqT, RespT](
       channel: Channel,
@@ -183,5 +182,9 @@ object ClientCalls {
       method: MethodDescriptor[ReqT, RespT],
       options: CallOptions,
       request: ReqT
-  ): RespT = ???
+  ): RespT =
+    Await.result(
+      asyncUnaryCall(channel, method, options, request),
+      Duration.apply(1L, scala.concurrent.duration.MINUTES)
+    )
 }
