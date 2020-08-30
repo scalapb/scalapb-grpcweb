@@ -36,7 +36,7 @@ final class GrpcWebServicePrinter(
       case StreamType.Unary =>
         s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam): scala.concurrent.Future[${method.outputType.scalaType}]"
       case StreamType.ServerStreaming =>
-        s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam, responseObserver: ${observer(method.outputType.scalaType)}): _root_.scalapb.grpcweb.native.ClientReadableStream"
+        s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam, responseObserver: ${observer(method.outputType.scalaType)}): $clientCallStreamObserver"
       case _ =>
         throw new RuntimeException("Unexpected method type")
     }
@@ -61,6 +61,8 @@ final class GrpcWebServicePrinter(
 
   private[this] val abstractStub = "_root_.io.grpc.stub.AbstractStub"
   private[this] val streamObserver = "_root_.io.grpc.stub.StreamObserver"
+  private[this] val clientCallStreamObserver =
+    "_root_.io.grpc.stub.ClientCallStreamObserver"
 
   private[this] val clientCalls = "_root_.scalapb.grpc.ClientCalls"
 

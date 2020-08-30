@@ -5,14 +5,13 @@ import io.grpc.protobuf.{
   ProtoFileDescriptorSupplier,
   ProtoMethodDescriptorSupplier
 }
-import io.grpc.stub.StreamObserver
+import io.grpc.stub.{ClientCallStreamObserver, StreamObserver}
 import io.grpc._
 import scalapb.grpcweb.Metadata
 import scalapb.grpcweb.native.{ClientReadableStream, ErrorInfo, StatusInfo}
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future, Promise}
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
@@ -76,6 +75,9 @@ object ConcreteProtoMethodDescriptorSupplier {
     new ConcreteProtoMethodDescriptorSupplier()
 }
 
+class AsyncClientCallStreamObserver(private val stream: ClientReadableStream)
+    extends ClientCallStreamObserver(stream)
+
 object ClientCalls {
   def asyncUnaryCall[ReqT, RespT](
       channel: Channel,
@@ -109,8 +111,8 @@ object ClientCalls {
       metadata: Metadata,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): ClientReadableStream = {
-    channel.client
+  ): ClientCallStreamObserver = {
+    val stream = channel.client
       .rpcCall(
         channel.baseUrl + "/" + method.fullName,
         request,
@@ -141,6 +143,8 @@ object ClientCalls {
         }
       )
       .on("end", { _: Any => responseObserver.onCompleted() })
+
+    new AsyncClientCallStreamObserver(stream)
   }
 
   def asyncUnaryCall[ReqT, RespT](
@@ -156,7 +160,7 @@ object ClientCalls {
       options: CallOptions,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): ClientReadableStream = ???
+  ): ClientCallStreamObserver = ???
 
   def asyncClientStreamingCall[ReqT, RespT](
       channel: Channel,
