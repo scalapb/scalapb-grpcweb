@@ -4,7 +4,7 @@ import io.grpc.MethodDescriptor.MethodType
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
 import scalapb.grpcweb.native.AbstractClientBase.MethodInfo
 import scalapb.grpcweb.native.GrpcWebClientBase
-import scalapb.grpcweb.native.{ErrorInfo, StatusInfo}
+import scalapb.grpcweb.native.{ClientReadableStream, ErrorInfo, StatusInfo}
 
 import scala.scalajs.js.typedarray.Uint8Array
 
@@ -21,6 +21,13 @@ package stub {
     def onError(throwable: Throwable): Unit
 
     def onCompleted(): Unit
+  }
+
+  abstract class ClientCallStreamObserver(
+      private val stream: ClientReadableStream
+  ) {
+    def cancel(): Unit =
+      stream.cancel()
   }
 
   abstract class AbstractStub[S <: AbstractStub[S]](

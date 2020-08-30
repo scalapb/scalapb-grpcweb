@@ -2,14 +2,14 @@ scalaVersion := "2.12.10"
 
 val scalapbVersion = "0.10.8"
 
+val Scala212 = "2.12.12"
+val Scala213 = "2.13.3"
+
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213)
 
 skip in publish := true
 
 sonatypeProfileName := "com.thesamet"
-
-val Scala212 = "2.12.10"
-val Scala213 = "2.13.2"
 
 scalaVersion in ThisBuild := Scala213
 

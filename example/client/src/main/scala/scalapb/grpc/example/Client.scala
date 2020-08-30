@@ -30,7 +30,7 @@ object Client {
     val metadata2: Metadata = Metadata("custom-header-2" -> "streaming-value")
 
     // Make an async server streaming call
-    stub.serverStreaming(
+    val stream = stub.serverStreaming(
       req,
       metadata2,
       new StreamObserver[Res] {
@@ -47,5 +47,8 @@ object Client {
         }
       }
     )
+
+    // Cancel ongoing streamig call
+    //stream.cancel()
   }
 }
