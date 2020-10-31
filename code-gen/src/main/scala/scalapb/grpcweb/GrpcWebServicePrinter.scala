@@ -46,11 +46,10 @@ final class GrpcWebServicePrinter(
     p.call(generateScalaDoc(service))
       .add(s"trait ${BaseTrait.name}[-Context] {")
       .indent
-      .print(service.methods.filter(isSupported)) {
-        case (p, method) =>
-          p.call(generateScalaDoc(method))
-            .add(serviceMethodSignature(method, true))
-            .add(serviceMethodSignature(method, false))
+      .print(service.methods.filter(isSupported)) { case (p, method) =>
+        p.call(generateScalaDoc(method))
+          .add(serviceMethodSignature(method, true))
+          .add(serviceMethodSignature(method, false))
       }
       .outdent
       .add("}")
@@ -136,9 +135,8 @@ final class GrpcWebServicePrinter(
       methods: Seq[PrinterEndo]
   ): PrinterEndo = { p =>
     p.add(
-        s"private final class $className[$context](channel: $channel, f: $context => $metadata, defaultContext: => $context, options: $callOptions = $callOptions.DEFAULT) extends ${BaseTrait.nameSymbol}[$context] {"
-      )
-      .indent
+      s"private final class $className[$context](channel: $channel, f: $context => $metadata, defaultContext: => $context, options: $callOptions = $callOptions.DEFAULT) extends ${BaseTrait.nameSymbol}[$context] {"
+    ).indent
       .call(methods: _*)
       .outdent
       .add("}")

@@ -1,4 +1,5 @@
 target/
+.bsp
 project/target/
 *.class
 

@@ -75,7 +75,14 @@ trait Channel {
 
 trait ManagedChannel extends Channel
 
-trait CallOptions
+trait CallOptions {
+  def withDeadline(deadline: Deadline): CallOptions = ???
+
+  def withDeadlineAfter(
+      duration: Long,
+      unit: java.util.concurrent.TimeUnit
+  ): CallOptions = ???
+}
 
 object CallOptions {
   def DEFAULT: CallOptions = new CallOptions {}
@@ -220,3 +227,5 @@ trait ServerCall[Req, Res] {
   def getMethodDescriptor(): MethodDescriptor[Req, Res] = ???
   def getAttributes(): Attributes = ???
 }
+
+trait Deadline
