@@ -49,6 +49,6 @@ object Client {
     )
 
     // Cancel ongoing streamig call
-    //stream.cancel()
+    // stream.cancel()
   }
 }
