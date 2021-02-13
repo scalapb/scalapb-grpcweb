@@ -3,7 +3,7 @@ scalaVersion := "2.12.10"
 val scalapbVersion = "0.10.11"
 
 val Scala212 = "2.12.12"
-val Scala213 = "2.13.3"
+val Scala213 = "2.13.4"
 
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213)
 
@@ -75,7 +75,7 @@ lazy val grpcweb = project
       "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
       "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.7"
     ),
-    npmDependencies in Compile += "grpc-web" -> "1.0.7"
+    npmDependencies in Compile += "grpc-web" -> "1.2.1"
   )
 
 inThisBuild(
