@@ -26,6 +26,13 @@ object native extends js.Object {
         metadata: Metadata,
         methodInfo: AbstractClientBase.MethodInfo[Req, Res]
     ): ClientReadableStream = js.native
+
+    def serverStreaming[Req, Res](
+        method: String,
+        request: Req,
+        metadata: Metadata,
+        methodInfo: AbstractClientBase.MethodInfo[Req, Res]
+    ): ClientReadableStream = js.native
   }
 
   @js.native
