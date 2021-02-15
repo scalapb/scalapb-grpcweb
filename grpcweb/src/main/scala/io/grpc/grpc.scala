@@ -47,7 +47,7 @@ package stub {
     def asyncClientStreamingCall(stuff: Any*): Unit = ???
 
     trait UnaryRequestMethod[ReqT, RespT] {
-      def invoke(request: ReqT, responseObserver: StreamObserver[RespT])
+      def invoke(request: ReqT, responseObserver: StreamObserver[RespT]): Unit
     }
 
     trait StreamingRequestMethod[ReqT, RespT] {

@@ -86,7 +86,7 @@ object ClientCalls {
       metadata: Metadata,
       request: ReqT
   ): Future[RespT] = {
-    val p = Promise[RespT]
+    val p = Promise[RespT]()
     val handler: (ErrorInfo, RespT) => Unit = {
       (errorInfo: ErrorInfo, res: RespT) =>
         if (errorInfo != null)
