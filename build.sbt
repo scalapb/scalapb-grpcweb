@@ -37,6 +37,18 @@ def projDef(name: String, shebang: Boolean) =
           sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = shebang)
         )
       ),
+      // prevents a conflict with the nowarn shipped by scala-collection-compat
+      assembly / assemblyMergeStrategy := {
+        case PathList(
+              "scala",
+              "annotation",
+              "nowarn.class" | "nowarn$.class"
+            ) =>
+          MergeStrategy.first
+        case x =>
+          (assembly / assemblyMergeStrategy).value.apply(x)
+      },
+      libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.4.1",
       skip in publish := true,
       Compile / mainClass := Some("scalapb.grpcweb.GrpcWebCodeGenerator")
     )
