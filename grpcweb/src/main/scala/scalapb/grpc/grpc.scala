@@ -12,6 +12,7 @@ import scalapb.grpcweb.native.{ClientReadableStream, ErrorInfo, StatusInfo}
 import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
 
 import scala.concurrent.{Future, Promise}
+import scala.scalajs.js.Dictionary
 import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
@@ -44,12 +45,14 @@ object Marshaller {
 }
 
 object Channels {
-  def grpcwebChannel(url: String): ManagedChannel =
+  def grpcwebChannel(url: String, binary: Boolean = false): ManagedChannel = {
+    val opts = if (binary) Dictionary("format" -> "binary") else Dictionary()
     new ManagedChannel {
-      override val client = new scalapb.grpcweb.native.GrpcWebClientBase(())
+      override val client = new scalapb.grpcweb.native.GrpcWebClientBase(opts)
 
       val baseUrl = url
     }
+  }
 }
 
 object Grpc {
