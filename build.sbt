@@ -48,7 +48,7 @@ def projDef(name: String, shebang: Boolean) =
         case x =>
           (assembly / assemblyMergeStrategy).value.apply(x)
       },
-      libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.4.1",
+      libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.4.2",
       skip in publish := true,
       Compile / mainClass := Some("scalapb.grpcweb.GrpcWebCodeGenerator")
     )
