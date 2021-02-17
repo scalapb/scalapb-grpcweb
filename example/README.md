@@ -15,7 +15,7 @@
 3. Start the envoy proxy server
 
    ```
-   docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.13.1
+   docker run --rm -ti --net=host -v $PWD/envoy.yaml:/etc/envoy/envoy.yaml envoyproxy/envoy:v1.17.0
    ```
 
 4. Open the `index.html` file from this directory in your browser.
