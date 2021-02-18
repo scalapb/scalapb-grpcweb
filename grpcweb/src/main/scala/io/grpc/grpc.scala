@@ -218,7 +218,9 @@ object Status {
 }
 
 final class StatusRuntimeException(status: Status)
-    extends RuntimeException(Status.formatThrowableMessage(status))
+    extends RuntimeException(Status.formatThrowableMessage(status)) {
+  def getStatus(): Status = status
+}
 
 trait Attributes
 
