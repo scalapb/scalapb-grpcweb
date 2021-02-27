@@ -1,8 +1,8 @@
-scalaVersion := "2.12.13"
+scalaVersion := "2.13.5"
 
 val scalapbVersion = "0.10.11"
 
-val Scala212 = "2.12.13"
+val Scala212 = "2.13.5"
 
 val Scala213 = "2.13.4"
 
