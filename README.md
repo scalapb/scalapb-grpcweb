@@ -11,17 +11,17 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
 
 1. Add the following to your `project/plugins.sbt`:
     ```
-    val grpcWebVersion = "0.3.0"
+    val grpcWebVersion = "0.6.0"
     
     resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     
-    addSbtPlugin("com.thesamet" % "sbt-protoc" % "0.99.31")
+    addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.1")
     
-    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.10.2"
+    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.0-M7"
     
     libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % grpcWebVersion
     
-    addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.17.0")
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.20.0")
     ```
 
 2. Add a cross-project with the protos that will be shared by Scala.js and
@@ -65,13 +65,13 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
    ```
    // Make an async unary call
    stub.unary(req).onComplete {
-     f => println("Unary", f)
+     f => println("Unary" -> f)
    }
 
    // You can also pass metadata
    // Make sure header1 is accepted on the envoy config, otherwise the request will be rejected
    stub.unary(req, Metadata("header1" -> "value1")).onComplete {
-     f => println("Unary", f)
+     f => println("Unary" -> f)
    }
 
    // Make an async server streaming call

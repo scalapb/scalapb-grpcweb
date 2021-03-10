@@ -23,10 +23,10 @@ object Client {
 
     val metadata: Metadata = Metadata("custom-header-1" -> "unary-value")
     // Make an async unary call
-    stub.unary(req).onComplete { f => println("Unary", f) }
+    stub.unary(req).onComplete { f => println("Unary" -> f) }
 
     // Make an async unary call with metadata
-    stub.unary(req, metadata).onComplete { f => println("Unary", f) }
+    stub.unary(req, metadata).onComplete { f => println("Unary" -> f) }
     val metadata2: Metadata = Metadata("custom-header-2" -> "streaming-value")
 
     // Make an async server streaming call

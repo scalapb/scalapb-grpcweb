@@ -71,7 +71,7 @@ final class GrpcWebServicePrinter(
 
   private[this] def methodDescriptor(method: MethodDescriptor) =
     PrinterEndo { p =>
-      def marshaller(t: MethodDescriptorPimp#MethodTypeWrapper) =
+      def marshaller(t: ExtendedMethodDescriptor#MethodTypeWrapper) =
         if (t.customScalaType.isDefined)
           s"_root_.scalapb.grpc.Marshaller.forTypeMappedType[${t.baseScalaType}, ${t.scalaType}]"
         else
