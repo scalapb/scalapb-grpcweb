@@ -1,18 +1,18 @@
-scalaVersion := "2.12.13"
-
-val scalapbVersion = "0.10.11"
+val scalapbVersion = "0.11.0-M7"
 
 val Scala212 = "2.12.13"
+val Scala213 = "2.13.5"
+val Scala300 = "3.0.0-RC1"
 
-val Scala213 = "2.13.4"
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala300)
 
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213)
-
-skip in publish := true
+publish / skip := true
 
 sonatypeProfileName := "com.thesamet"
 
-scalaVersion in ThisBuild := Scala213
+ThisBuild / scalaVersion := Scala212
+
+ThisBuild / resolvers += Resolver.JCenterRepository
 
 lazy val codeGen = project
   .in(file("code-gen"))
@@ -32,7 +32,7 @@ def projDef(name: String, shebang: Boolean) =
     .enablePlugins(AssemblyPlugin)
     .dependsOn(codeGen)
     .settings(
-      assemblyOption in assembly := (assemblyOption in assembly).value.copy(
+      assembly / assemblyOption := (assembly / assemblyOption).value.copy(
         prependShellScript = Some(
           sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = shebang)
         )
@@ -48,8 +48,7 @@ def projDef(name: String, shebang: Boolean) =
         case x =>
           (assembly / assemblyMergeStrategy).value.apply(x)
       },
-      libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.4.2",
-      skip in publish := true,
+      publish / skip := true,
       Compile / mainClass := Some("scalapb.grpcweb.GrpcWebCodeGenerator")
     )
 
@@ -61,34 +60,37 @@ lazy val protocGenScalaGrpcWebWindows =
 
 lazy val protocGenScalaGrpcWeb = project
   .settings(
-    crossScalaVersions := List(Scala213),
+    crossScalaVersions := List(Scala213, Scala300),
     name := "protoc-gen-scalapb-grpcweb",
-    publishArtifact in (Compile, packageDoc) := false,
-    publishArtifact in (Compile, packageSrc) := false,
+    Compile / packageDoc / publishArtifact := false,
+    Compile / packageSrc / publishArtifact := false,
     crossPaths := false,
     addArtifact(
       Artifact("protoc-gen-scalapb-grpcweb", "jar", "sh", "unix"),
-      assembly in (protocGenScalaGrpcWebUnix, Compile)
+      protocGenScalaGrpcWebUnix / Compile / assembly
     ),
     addArtifact(
       Artifact("protoc-gen-scalapb-grpcweb", "jar", "bat", "windows"),
-      assembly in (protocGenScalaGrpcWebWindows, Compile)
+      protocGenScalaGrpcWebWindows / Compile / assembly
     ),
     autoScalaLibrary := false
   )
 
 lazy val grpcweb = project
   .in(file("grpcweb"))
-  .enablePlugins(ScalaJSPlugin)
-  .enablePlugins(ScalaJSBundlerPlugin)
+  .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := Seq(Scala212, Scala213),
+    crossScalaVersions := Seq(Scala212, Scala213, Scala300),
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
       "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.8"
     ),
-    npmDependencies in Compile += "grpc-web" -> "1.2.1"
+    scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => List("-source:3.0-migration")
+      case _            => Nil
+    }),
+    Compile / npmDependencies += "grpc-web" -> "1.2.1"
   )
 
 inThisBuild(

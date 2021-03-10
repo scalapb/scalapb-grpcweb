@@ -3,9 +3,9 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 name := "scalapb-grpcweb-example"
 
-scalaVersion in ThisBuild := "2.12.10"
+ThisBuild / scalaVersion := "3.0.0-RC1"
 
-resolvers in ThisBuild ++= Seq(
+ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("releases")
 )
@@ -15,13 +15,14 @@ lazy val protos =
     .crossType(CrossType.Pure)
     .in(file("protos"))
     .settings(
-      PB.protoSources in Compile := Seq(
-        (baseDirectory in ThisBuild).value / "protos" / "src" / "main" / "protobuf"
+      Compile / PB.protoSources := Seq(
+        (ThisBuild / baseDirectory).value / "protos" / "src" / "main" / "protobuf"
       ),
-      PB.targets in Compile := Seq(
-        scalapb.gen() -> (sourceManaged in Compile).value
+      Compile / PB.targets := Seq(
+        scalapb.gen() -> (Compile / sourceManaged).value
       ),
-      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
+      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+      scalacOptions += "-source:3.0-migration"
     )
     .jvmSettings(
       libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
@@ -29,9 +30,9 @@ lazy val protos =
     .jsSettings(
       // publish locally and update the version for test
       libraryDependencies += "com.thesamet.scalapb.grpcweb" %%% "scalapb-grpcweb" % scalapb.grpcweb.BuildInfo.version,
-      PB.targets in Compile := Seq(
-        scalapb.gen(grpc = false) -> (sourceManaged in Compile).value,
-        scalapb.grpcweb.GrpcWebCodeGenerator -> (sourceManaged in Compile).value
+      Compile / PB.targets := Seq(
+        scalapb.gen(grpc = false) -> (Compile / sourceManaged).value,
+        scalapb.grpcweb.GrpcWebCodeGenerator -> (Compile / sourceManaged).value
       )
     )
 

@@ -1,18 +1,18 @@
-{pkgs ? import <nixpkgs> {
-  config = {
-    packageOverrides = pkgs: {
-      sbt = pkgs.sbt.override { jre = pkgs.openjdk11; };
-    };
-  };
-}} :
-pkgs.mkShell {
+{ pkgs ? import <nixpkgs> { } }:
+
+with pkgs;
+
+let
+  sbt = pkgs.sbt.override { jre = openjdk11; };
+in
+mkShell {
   buildInputs = [
-    pkgs.sbt
-    pkgs.openjdk11
-    pkgs.nodejs
-    pkgs.yarn
+    sbt
+    openjdk11
+    nodejs
+    yarn
 
     # keep this line if you use bash
-    pkgs.bashInteractive
+    bashInteractive
   ];
 }
