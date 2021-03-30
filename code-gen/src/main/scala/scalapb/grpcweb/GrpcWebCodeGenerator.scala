@@ -21,7 +21,8 @@ object GrpcWebCodeGenerator extends CodeGenApp {
             generateServiceFiles(file, implicits)
           }
           CodeGenResponse.succeed(
-            generatedFiles
+            generatedFiles,
+            Set(CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL)
           )
         } catch {
           case e: GeneratorException =>
