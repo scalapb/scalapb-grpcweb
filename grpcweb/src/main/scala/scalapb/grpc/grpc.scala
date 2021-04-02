@@ -116,7 +116,7 @@ object ClientCalls {
       responseObserver: StreamObserver[RespT]
   ): ClientCallStreamObserver = {
     val stream = channel.client
-      .rpcCall(
+      .serverStreaming(
         channel.baseUrl + "/" + method.fullName,
         request,
         metadata,
