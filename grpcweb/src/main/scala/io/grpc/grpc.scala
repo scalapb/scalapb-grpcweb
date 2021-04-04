@@ -23,10 +23,10 @@ package stub {
     def onCompleted(): Unit
   }
 
-  abstract class ClientCallStreamObserver(
-      private val stream: ClientReadableStream
+  abstract class ClientCallStreamObserver[RespT](
+      private val stream: ClientReadableStream[RespT]
   ) {
-    def cancel(): Unit =
+    def cancel(message: String, cause: Throwable): Unit =
       stream.cancel()
   }
 
