@@ -194,9 +194,14 @@ object ServerServiceDefinition {
   }
 }
 
-final case class Status(code: Int, description: String, cause: Throwable) {
-  def withDescription(description: String) = copy(description = description)
-  def withCause(cause: Throwable) = copy(cause = cause)
+final class Status(code: Status.Code, description: String, cause: Throwable) {
+  def withDescription(description: String) =
+    new Status(code, description, cause)
+  def withCause(cause: Throwable) = new Status(code, description, cause)
+
+  def getCode(): Status.Code = code
+  def getDescription(): String = description
+  def getCause(): Throwable = cause
 }
 
 object Status {
@@ -206,15 +211,107 @@ object Status {
         ei.code.asInstanceOf[String].toInt
       else ei.code.asInstanceOf[Int]
 
-    Status(code, ei.message, null)
+    Status.fromCodeValue(code).withDescription(ei.message)
   }
 
-  def fromStatusInfo(si: StatusInfo): Status = Status(si.code, si.details, null)
+  def fromStatusInfo(si: StatusInfo): Status =
+    Status.fromCodeValue(si.code).withDescription(si.details)
 
   def formatThrowableMessage(status: Status): String =
-    s"${status.code}: ${status.description}"
+    s"${status.getCode().name()}: ${status.getDescription()}"
 
-  val INTERNAL = Status(13, null, null)
+  def fromCodeValue(codeValue: Int): Status = {
+    StatusList
+      .find(_.getCode().value() == codeValue)
+      .getOrElse(UNKNOWN.withDescription("Unknown code " + codeValue))
+  }
+
+  final class Code private (_name: String, _value: Int) {
+    def toStatus(): Status = {
+      StatusList
+        .find(_.getCode() == this)
+        .getOrElse(
+          throw new IllegalArgumentException(
+            s"No status found for code ${name()}"
+          )
+        )
+    }
+
+    def name(): String = _name
+
+    def value(): Int = _value
+  }
+
+  object Code {
+    lazy val OK = new Code("OK", 0)
+    lazy val CANCELLED = new Code("CANCELLED", 1)
+    lazy val UNKNOWN = new Code("UNKNOWN", 2)
+    lazy val INVALID_ARGUMENT = new Code("INVALID_ARGUMENT", 3)
+    lazy val DEADLINE_EXCEEDED = new Code("DEADLINE_EXCEEDED", 4)
+    lazy val NOT_FOUND = new Code("NOT_FOUND", 5)
+    lazy val ALREADY_EXISTS = new Code("ALREADY_EXISTS", 6)
+    lazy val PERMISSION_DENIED = new Code("PERMISSION_DENIED", 7)
+    lazy val RESOURCE_EXHAUSTED = new Code("RESOURCE_EXHAUSTED", 8)
+    lazy val FAILED_PRECONDITION = new Code("FAILED_PRECONDITION", 9)
+    lazy val ABORTED = new Code("ABORTED", 10)
+    lazy val OUT_OF_RANGE = new Code("OUT_OF_RANGE", 11)
+    lazy val UNIMPLEMENTED = new Code("UNIMPLEMENTED", 12)
+    lazy val INTERNAL = new Code("INTERNAL", 13)
+    lazy val UNAVAILABLE = new Code("UNAVAILABLE", 14)
+    lazy val DATA_LOSS = new Code("DATA_LOSS", 15)
+    lazy val UNAUTHENTICATED = new Code("UNAUTHENTICATED", 16)
+
+    lazy val values: Array[Code] = {
+      Array(
+        OK,
+        CANCELLED,
+        UNKNOWN,
+        INVALID_ARGUMENT,
+        DEADLINE_EXCEEDED,
+        NOT_FOUND,
+        ALREADY_EXISTS,
+        PERMISSION_DENIED,
+        RESOURCE_EXHAUSTED,
+        FAILED_PRECONDITION,
+        ABORTED,
+        OUT_OF_RANGE,
+        UNIMPLEMENTED,
+        INVALID_ARGUMENT,
+        UNAVAILABLE,
+        DATA_LOSS,
+        UNAUTHENTICATED
+      )
+    }
+
+    def valueOf(value: String): Code = {
+      values.find(_.name() == value) match {
+        case Some(code) => code
+        case _ =>
+          throw new IllegalArgumentException(s"Unrecognized code: $value")
+      }
+    }
+  }
+
+  private lazy val StatusList =
+    Code.values.map(code => new Status(code, null, null))
+
+  lazy val OK = Code.OK.toStatus()
+  lazy val CANCELLED = Code.CANCELLED.toStatus()
+  lazy val UNKNOWN = Code.UNKNOWN.toStatus()
+  lazy val INVALID_ARGUMENT = Code.INVALID_ARGUMENT.toStatus()
+  lazy val DEADLINE_EXCEEDED = Code.DEADLINE_EXCEEDED.toStatus()
+  lazy val NOT_FOUND = Code.NOT_FOUND.toStatus()
+  lazy val ALREADY_EXISTS = Code.ALREADY_EXISTS.toStatus()
+  lazy val PERMISSION_DENIED = Code.PERMISSION_DENIED.toStatus()
+  lazy val RESOURCE_EXHAUSTED = Code.RESOURCE_EXHAUSTED.toStatus()
+  lazy val FAILED_PRECONDITION = Code.FAILED_PRECONDITION.toStatus()
+  lazy val ABORTED = Code.ABORTED.toStatus()
+  lazy val OUT_OF_RANGE = Code.OUT_OF_RANGE.toStatus()
+  lazy val UNIMPLEMENTED = Code.UNIMPLEMENTED.toStatus()
+  lazy val INTERNAL = Code.INTERNAL.toStatus()
+  lazy val UNAVAILABLE = Code.UNAVAILABLE.toStatus()
+  lazy val DATA_LOSS = Code.DATA_LOSS.toStatus()
+  lazy val UNAUTHENTICATED = Code.UNAUTHENTICATED.toStatus()
 }
 
 final class StatusRuntimeException(status: Status)
