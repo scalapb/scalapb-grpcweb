@@ -21,8 +21,11 @@ final class GrpcWebServicePrinter(
   def scalaFileName =
     OuterObject.fullName.replace('.', '/') + ".scala"
 
-  private[this] def observer(typeParam: String): String =
-    s"$streamObserver[$typeParam]"
+  private[this] def streamObserver(typeParam: String): String =
+    s"_root_.io.grpc.stub.StreamObserver[$typeParam]"
+
+  private[this] def clientCallStreamObserver(typeParam: String): String =
+    s"_root_.io.grpc.stub.ClientCallStreamObserver[$typeParam]"
 
   def isSupported(m: MethodDescriptor): Boolean =
     (m.streamType == StreamType.Unary || m.streamType == StreamType.ServerStreaming)
@@ -36,7 +39,9 @@ final class GrpcWebServicePrinter(
       case StreamType.Unary =>
         s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam): scala.concurrent.Future[${method.outputType.scalaType}]"
       case StreamType.ServerStreaming =>
-        s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam, responseObserver: ${observer(method.outputType.scalaType)}): $clientCallStreamObserver"
+        s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam, responseObserver: ${streamObserver(
+          method.outputType.scalaType
+        )}): ${clientCallStreamObserver(method.outputType.scalaType)}"
       case _ =>
         throw new RuntimeException("Unexpected method type")
     }
@@ -59,9 +64,6 @@ final class GrpcWebServicePrinter(
   private[this] val callOptions = "_root_.io.grpc.CallOptions"
 
   private[this] val abstractStub = "_root_.io.grpc.stub.AbstractStub"
-  private[this] val streamObserver = "_root_.io.grpc.stub.StreamObserver"
-  private[this] val clientCallStreamObserver =
-    "_root_.io.grpc.stub.ClientCallStreamObserver"
 
   private[this] val clientCalls = "_root_.scalapb.grpc.ClientCalls"
 

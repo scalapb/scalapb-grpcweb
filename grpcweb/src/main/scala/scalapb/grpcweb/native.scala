@@ -18,21 +18,21 @@ object native extends js.Object {
         metadata: Metadata,
         methodInfo: AbstractClientBase.MethodInfo[Req, Res],
         callback: js.Function2[ErrorInfo, Res, Unit]
-    ): ClientReadableStream = js.native
+    ): ClientReadableStream[Res] = js.native
 
     def rpcCall[Req, Res](
         method: String,
         request: Req,
         metadata: Metadata,
         methodInfo: AbstractClientBase.MethodInfo[Req, Res]
-    ): ClientReadableStream = js.native
+    ): ClientReadableStream[Res] = js.native
 
     def serverStreaming[Req, Res](
         method: String,
         request: Req,
         metadata: Metadata,
         methodInfo: AbstractClientBase.MethodInfo[Req, Res]
-    ): ClientReadableStream = js.native
+    ): ClientReadableStream[Res] = js.native
   }
 
   @js.native
@@ -46,13 +46,16 @@ object native extends js.Object {
   }
 
   @js.native
-  class ClientReadableStream extends js.Any {
-    def on[T](
+  class ClientReadableStream[Res] extends js.Any {
+    def on[A](
         `type`: String,
-        callback: js.Function1[T, Unit]
-    ): ClientReadableStream = js.native
+        callback: js.Function1[A, Unit]
+    ): ClientReadableStream[Res] = js.native
 
-    def on(`type`: String, callback: js.Function0[Unit]): ClientReadableStream =
+    def on(
+        `type`: String,
+        callback: js.Function0[Unit]
+    ): ClientReadableStream[Res] =
       js.native
 
     def cancel(): Unit = js.native

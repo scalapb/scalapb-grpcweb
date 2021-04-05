@@ -78,8 +78,9 @@ object ConcreteProtoMethodDescriptorSupplier {
     new ConcreteProtoMethodDescriptorSupplier()
 }
 
-class AsyncClientCallStreamObserver(private val stream: ClientReadableStream)
-    extends ClientCallStreamObserver(stream)
+class AsyncClientCallStreamObserver[RespT](
+    private val stream: ClientReadableStream[RespT]
+) extends ClientCallStreamObserver(stream)
 
 object ClientCalls {
   def asyncUnaryCall[ReqT, RespT](
@@ -114,7 +115,7 @@ object ClientCalls {
       metadata: Metadata,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): ClientCallStreamObserver = {
+  ): ClientCallStreamObserver[RespT] = {
     val stream = channel.client
       .serverStreaming(
         channel.baseUrl + "/" + method.fullName,
@@ -163,7 +164,7 @@ object ClientCalls {
       options: CallOptions,
       request: ReqT,
       responseObserver: StreamObserver[RespT]
-  ): ClientCallStreamObserver = ???
+  ): ClientCallStreamObserver[RespT] = ???
 
   def asyncClientStreamingCall[ReqT, RespT](
       channel: Channel,

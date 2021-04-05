@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 name := "scalapb-grpcweb-example"
 
-ThisBuild / scalaVersion := "3.0.0-RC1"
+ThisBuild / scalaVersion := "2.13.5"
 
 ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
@@ -22,7 +22,6 @@ lazy val protos =
         scalapb.gen() -> (Compile / sourceManaged).value
       ),
       libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
-      scalacOptions += "-source:3.0-migration"
     )
     .jvmSettings(
       libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
