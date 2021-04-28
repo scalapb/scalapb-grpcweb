@@ -11,13 +11,13 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
 
 1. Add the following to your `project/plugins.sbt`:
     ```
-    val grpcWebVersion = "0.6.1"
+    val grpcWebVersion = "0.6.2"
     
     resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     
-    addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.1")
+    addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.3")
     
-    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.1"
+    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.2"
     
     libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % grpcWebVersion
     
