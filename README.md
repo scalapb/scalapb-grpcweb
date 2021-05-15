@@ -17,7 +17,7 @@ from your Scala.js code using [grpc-web](https://github.com/grpc/grpc-web).
     
     addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.3")
     
-    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.2"
+    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.3"
     
     libraryDependencies += "com.thesamet.scalapb.grpcweb" %% "scalapb-grpcweb-code-gen" % grpcWebVersion
     
