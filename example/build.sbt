@@ -21,7 +21,7 @@ lazy val protos =
       Compile / PB.targets := Seq(
         scalapb.gen() -> (Compile / sourceManaged).value
       ),
-      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion,
+      libraryDependencies += "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion
     )
     .jvmSettings(
       libraryDependencies += "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion
