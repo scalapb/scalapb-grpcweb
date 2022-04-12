@@ -2,7 +2,7 @@ val scalapbVersion = "0.11.10"
 
 val Scala212 = "2.12.13"
 val Scala213 = "2.13.8"
-val Scala300 = "3.1.1"
+val Scala300 = "3.1.2"
 
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala300)
 
