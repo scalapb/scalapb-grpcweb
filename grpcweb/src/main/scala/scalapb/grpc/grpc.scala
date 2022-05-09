@@ -123,10 +123,10 @@ object ClientCalls {
         metadata,
         method.methodInfo
       )
-      .on("data", { res: RespT => responseObserver.onNext(res) })
+      .on("data", { (res: RespT) => responseObserver.onNext(res) })
       .on(
         "status",
-        { statusInfo: StatusInfo =>
+        { (statusInfo: StatusInfo) =>
           if (statusInfo.code != 0) {
             responseObserver.onError(
               new StatusRuntimeException(Status.fromStatusInfo(statusInfo))
@@ -139,14 +139,14 @@ object ClientCalls {
       )
       .on(
         "error",
-        { errorInfo: ErrorInfo =>
+        { (errorInfo: ErrorInfo) =>
           responseObserver
             .onError(
               new StatusRuntimeException(Status.fromErrorInfo(errorInfo))
             )
         }
       )
-      .on("end", { _: Any => responseObserver.onCompleted() })
+      .on("end", { (_: Any) => responseObserver.onCompleted() })
 
     new AsyncClientCallStreamObserver(stream)
   }
