@@ -2,9 +2,9 @@ val scalapbVersion = "0.11.10"
 
 val Scala212 = "2.12.15"
 val Scala213 = "2.13.8"
-val Scala300 = "3.1.2"
+val Scala3 = "3.1.2"
 
-ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala300)
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
 
 publish / skip := true
 
@@ -60,7 +60,7 @@ lazy val protocGenScalaGrpcWebWindows =
 
 lazy val protocGenScalaGrpcWeb = project
   .settings(
-    crossScalaVersions := List(Scala213, Scala300),
+    crossScalaVersions := List(Scala213, Scala3),
     name := "protoc-gen-scalapb-grpcweb",
     Compile / packageDoc / publishArtifact := false,
     Compile / packageSrc / publishArtifact := false,
@@ -80,7 +80,7 @@ lazy val grpcweb = project
   .in(file("grpcweb"))
   .enablePlugins(ScalaJSPlugin, ScalaJSBundlerPlugin)
   .settings(
-    crossScalaVersions := Seq(Scala212, Scala213, Scala300),
+    crossScalaVersions := Seq(Scala212, Scala213, Scala3),
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
