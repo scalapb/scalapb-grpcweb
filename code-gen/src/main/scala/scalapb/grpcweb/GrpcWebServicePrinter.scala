@@ -40,8 +40,8 @@ final class GrpcWebServicePrinter(
         s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam): scala.concurrent.Future[${method.outputType.scalaType}]"
       case StreamType.ServerStreaming =>
         s"${method.deprecatedAnnotation}def ${method.name}" + s"(request: ${method.inputType.scalaType}$contextParam, responseObserver: ${streamObserver(
-          method.outputType.scalaType
-        )}): ${clientCallStreamObserver(method.outputType.scalaType)}"
+            method.outputType.scalaType
+          )}): ${clientCallStreamObserver(method.outputType.scalaType)}"
       case _ =>
         throw new RuntimeException("Unexpected method type")
     }
