@@ -1,4 +1,4 @@
-val scalapbVersion = "0.11.11"
+val scalapbVersion = "0.11.12"
 
 val Scala212 = "2.12.17"
 val Scala213 = "2.13.10"
@@ -84,7 +84,7 @@ lazy val grpcweb = project
     name := "scalapb-grpcweb",
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %%% "scalapb-runtime" % scalapbVersion,
-      "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.12"
+      "com.thesamet.scalapb" %%% "protobuf-runtime-scala" % "0.8.13"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((3, _)) => List("-source:3.0-migration")
