@@ -37,6 +37,12 @@ package stub {
     def build(channel: Channel, options: CallOptions): S
   }
 
+  object AbstractStub {
+    trait StubFactory[T <: AbstractStub[T]] {
+      def newStub(channel: Channel, options: CallOptions): T
+    }
+  }
+
   object ServerCalls {
     def asyncUnaryCall(stuff: Any*): Unit = ???
 
