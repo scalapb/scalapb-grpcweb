@@ -325,6 +325,13 @@ final class StatusRuntimeException(status: Status)
   def getStatus(): Status = status
 }
 
+final class StatusException(status: Status, trailers: Metadata)
+    extends Exception(Status.formatThrowableMessage(status)) {
+  def this(status: Status) = this(status, null)
+  def getStatus(): Status = status
+  def getTrailers(): Metadata = trailers
+}
+
 trait Attributes
 
 trait ServerCall[Req, Res] {
