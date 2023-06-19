@@ -9,7 +9,7 @@ import io.grpc.stub.{ClientCallStreamObserver, StreamObserver}
 import io.grpc._
 import scalapb.grpcweb.Metadata
 import scalapb.grpcweb.native.{ClientReadableStream, ErrorInfo, StatusInfo}
-import scalapb.{GeneratedMessage, GeneratedMessageCompanion}
+import scalapb.{GeneratedMessage, GeneratedMessageCompanion, TypeMapper}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.Dictionary
@@ -17,29 +17,50 @@ import scala.scalajs.js.typedarray.Uint8Array
 import scala.util.Try
 
 object Marshaller {
+  private def byteArrayToUint8Array(ba: Array[Byte]): Uint8Array = {
+    val result = new Uint8Array(ba.length)
+    var i = 0
+    while (i < ba.length) {
+      result(i) = ba(i)
+      i += 1
+    }
+    result
+  }
+
+  private def uint8ArrayToByteArray(u8: Uint8Array): Array[Byte] = {
+    val ba = new Array[Byte](u8.length)
+    var i = 0
+    while (i < ba.length) {
+      ba(i) = u8(i).toByte
+      i += 1
+    }
+    ba
+  }
+
   def forMessage[T <: GeneratedMessage](implicit
       cmp: GeneratedMessageCompanion[T]
   ): io.grpc.Marshaller[T] =
     new io.grpc.Marshaller[T] {
       override def toUint8Array(value: T): Uint8Array = {
-        val ba = value.toByteArray
-        val result = new Uint8Array(ba.length)
-        var i = 0
-        while (i < ba.length) {
-          result(i) = ba(i)
-          i += 1
-        }
-        result
+        byteArrayToUint8Array(value.toByteArray)
       }
 
       override def fromUint8Array(value: Uint8Array): T = {
-        val ba = new Array[Byte](value.length)
-        var i = 0
-        while (i < ba.length) {
-          ba(i) = value(i).toByte
-          i += 1
-        }
-        cmp.parseFrom(ba)
+        cmp.parseFrom(uint8ArrayToByteArray(value))
+      }
+    }
+
+  def forTypeMappedType[T <: GeneratedMessage, Custom](implicit
+      typeMapper: TypeMapper[T, Custom],
+      companion: GeneratedMessageCompanion[T]
+  ): io.grpc.Marshaller[Custom] =
+    new io.grpc.Marshaller[Custom] {
+      override def toUint8Array(value: Custom): Uint8Array = {
+        byteArrayToUint8Array(typeMapper.toBase(value).toByteArray)
+      }
+
+      override def fromUint8Array(value: Uint8Array): Custom = {
+        typeMapper.toCustom(companion.parseFrom(uint8ArrayToByteArray(value)))
       }
     }
 }

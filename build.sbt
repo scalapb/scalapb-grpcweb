@@ -90,7 +90,7 @@ lazy val grpcweb = project
       case Some((3, _)) => List("-source:3.0-migration")
       case _            => Nil
     }),
-    Compile / npmDependencies += "grpc-web" -> "1.2.1"
+    Compile / npmDependencies += "grpc-web" -> "1.4.2"
   )
 
 inThisBuild(
