@@ -16,7 +16,7 @@ object native extends js.Object {
         method: String,
         request: Req,
         metadata: Metadata,
-        methodInfo: AbstractClientBase.MethodInfo[Req, Res],
+        methodInfo: MethodDescriptor[Req, Res],
         callback: js.Function2[ErrorInfo, Res, Unit]
     ): ClientReadableStream[Res] = js.native
 
@@ -24,26 +24,26 @@ object native extends js.Object {
         method: String,
         request: Req,
         metadata: Metadata,
-        methodInfo: AbstractClientBase.MethodInfo[Req, Res]
+        methodInfo: MethodDescriptor[Req, Res]
     ): ClientReadableStream[Res] = js.native
 
     def serverStreaming[Req, Res](
         method: String,
         request: Req,
         metadata: Metadata,
-        methodInfo: AbstractClientBase.MethodInfo[Req, Res]
+        methodInfo: MethodDescriptor[Req, Res]
     ): ClientReadableStream[Res] = js.native
   }
 
   @js.native
-  object AbstractClientBase extends js.Any {
-    @js.native
-    class MethodInfo[Req, Res](
-        responseType: js.Any,
-        requestSerializer: js.Function1[Req, Uint8Array],
-        responseDeserializer: js.Function1[Uint8Array, Res]
-    ) extends js.Any
-  }
+  class MethodDescriptor[Req, Res](
+      name: String,
+      methodType: String,
+      requestType: js.Any,
+      responseType: js.Any,
+      requestSerializer: js.Function1[Req, Uint8Array],
+      responseDeserializer: js.Function1[Uint8Array, Res]
+  ) extends js.Any
 
   @js.native
   class ClientReadableStream[Res] extends js.Any {

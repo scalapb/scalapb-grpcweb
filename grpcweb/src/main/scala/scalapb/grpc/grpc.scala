@@ -123,7 +123,7 @@ object ClientCalls {
       channel.baseUrl + "/" + method.fullName,
       request,
       metadata,
-      method.methodInfo,
+      method.toGrpcWeb,
       handler
     )
     p.future
@@ -142,7 +142,7 @@ object ClientCalls {
         channel.baseUrl + "/" + method.fullName,
         request,
         metadata,
-        method.methodInfo
+        method.toGrpcWeb
       )
       .on("data", { (res: RespT) => responseObserver.onNext(res) })
       .on(

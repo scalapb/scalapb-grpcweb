@@ -2,7 +2,7 @@ package io.grpc
 
 import io.grpc.MethodDescriptor.MethodType
 import io.grpc.protobuf.ProtoFileDescriptorSupplier
-import scalapb.grpcweb.native.AbstractClientBase.MethodInfo
+import scalapb.grpcweb.native.{MethodDescriptor => GrpcWebMethodDescriptor}
 import scalapb.grpcweb.native.GrpcWebClientBase
 import scalapb.grpcweb.native.{ClientReadableStream, ErrorInfo, StatusInfo}
 
@@ -106,11 +106,20 @@ case class MethodDescriptor[Req, Res](
     requestMarshaller: Marshaller[Req],
     responseMarshaller: Marshaller[Res]
 ) {
-  val methodInfo: MethodInfo[Req, Res] = new MethodInfo[Req, Res](
-    responseType = null,
-    requestSerializer = requestMarshaller.toUint8Array(_: Req),
-    responseDeserializer = responseMarshaller.fromUint8Array(_: Uint8Array)
-  )
+  val toGrpcWeb: GrpcWebMethodDescriptor[Req, Res] =
+    new GrpcWebMethodDescriptor[Req, Res](
+      fullName,
+      methodType match {
+        case MethodDescriptor.MethodType.UNARY            => "unary"
+        case MethodDescriptor.MethodType.SERVER_STREAMING => "server_streaming"
+        case MethodDescriptor.MethodType.CLIENT_STREAMING => "client_streaming"
+        case MethodDescriptor.MethodType.BIDI_STREAMING   => "bidi_streaming"
+      },
+      requestType = null,
+      responseType = null,
+      requestSerializer = requestMarshaller.toUint8Array(_: Req),
+      responseDeserializer = responseMarshaller.fromUint8Array(_: Uint8Array)
+    )
 }
 
 object MethodDescriptor {
@@ -282,7 +291,7 @@ object Status {
         ABORTED,
         OUT_OF_RANGE,
         UNIMPLEMENTED,
-        INVALID_ARGUMENT,
+        INTERNAL,
         UNAVAILABLE,
         DATA_LOSS,
         UNAUTHENTICATED
