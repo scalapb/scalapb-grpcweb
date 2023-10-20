@@ -12,8 +12,6 @@ sonatypeProfileName := "com.thesamet"
 
 ThisBuild / scalaVersion := Scala212
 
-ThisBuild / resolvers += Resolver.JCenterRepository
-
 lazy val codeGen = project
   .in(file("code-gen"))
   .enablePlugins(BuildInfoPlugin)
