@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 name := "scalapb-grpcweb-example"
 
-ThisBuild / scalaVersion := "2.13.14"
+ThisBuild / scalaVersion := "2.13.15"
 
 ThisBuild / resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
