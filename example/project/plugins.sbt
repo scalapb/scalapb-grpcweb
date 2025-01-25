@@ -2,7 +2,7 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.17.0")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.18.2")
 
 addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.3")
 
