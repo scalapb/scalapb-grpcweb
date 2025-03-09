@@ -8,7 +8,7 @@ addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.3")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler" % "0.21.1")
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.4")
 
 libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.4"
 
