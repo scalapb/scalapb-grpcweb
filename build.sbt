@@ -1,7 +1,7 @@
 val scalapbVersion = "0.11.18"
 
 val Scala212 = "2.12.20"
-val Scala213 = "2.13.16"
+val Scala213 = "2.13.17"
 val Scala3 = "3.7.1"
 
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
